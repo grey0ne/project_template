@@ -1,0 +1,18 @@
+FROM python:3.12.1-slim
+
+ENV PYTHONUNBUFFERED=1
+ENV POETRY_VIRTUALENVS_CREATE=false
+
+WORKDIR /app
+
+COPY pyproject.toml /app/
+
+RUN python -mpip install poetry && poetry install
+
+COPY . /app/src
+
+WORKDIR /app/src
+
+RUN rm Dockerfile Dockerfile.prod poetry.lock pyproject.toml local_settings.py tox.ini
+
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "-k", "application.worker.CustomUvicornWorker", "application.asgi"]

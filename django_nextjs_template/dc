@@ -9,17 +9,17 @@ DEV_COMPOSE="docker compose -f docker/common.yml -f docker/dev.yml --env-file=./
 DEV_SUPERUSER_PASSWORD="devpass"
 
 if [ $1 = "django" ]; then
-  $DEV_COMPOSE run --rm gunicorn python manage.py "${@:2}"
+  $DEV_COMPOSE run --rm django python manage.py "${@:2}"
 elif [ $1 = "sh" ]; then
   $DEV_COMPOSE exec $2 bash
 elif [ $1 = "test" ]; then
-  $DEV_COMPOSE run --rm gunicorn pytest
+  $DEV_COMPOSE run --rm django pytest
 elif [ $1 = "format" ]; then
-  $DEV_COMPOSE run --rm gunicorn sh -c 'isort . && black .'
+  $DEV_COMPOSE run --rm django sh -c 'isort . && black .'
 elif [ $1 = "tmux" ]; then
   ./dev-scripts/tmux_dev.sh
 elif [ $1 = "devsuperuser" ]; then
-  $DEV_COMPOSE run --rm gunicorn sh -c "export DJANGO_SUPERUSER_PASSWORD='devpass' && python manage.py createsuperuser --noinput --username $2 --email $2@$2.com"
+  $DEV_COMPOSE run --rm django sh -c "export DJANGO_SUPERUSER_PASSWORD='devpass' && python manage.py createsuperuser --noinput --username $2 --email $2@$2.com"
 elif [ $1 = "dev" ]; then
     if test -z "$DEV_KEY_PATH" 
     then
@@ -34,7 +34,7 @@ elif [ $1 = "buildtest" ]; then
 elif [ $1 = "runtest" ]; then
     docker run -it --rm --hostname=$PROJECT_NAME-tests --name=$PROJECT_NAME-tests -v .:/app/src --ipc=host --network=$PROJECT_NAME $PROJECT_NAME-playwright npx playwright test
 elif [ $1 = "generatetypes" ]; then
-    $DEV_COMPOSE exec nextjs npx -y openapi-typescript@6.7.4 http://gunicorn:8000/api/openapi.json --output utils/apiTypes.ts
+    $DEV_COMPOSE exec nextjs npx -y openapi-typescript@6.7.4 http://django:8000/api/openapi.json --output utils/apiTypes.ts
 elif [ $1 = "deploystage" ]; then
     ./dev-scripts/deploy.sh stage.meta-game.io dev-scripts/env.stage
 elif [ $1 = "deployprod" ]; then
