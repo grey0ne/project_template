@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -e
+
+source ./dev-scripts/env.base
+source ./dev-scripts/env.dev
+
+DEV_COMPOSE="docker compose -f docker/common.yml -f docker/dev.yml --env-file=./dev-scripts/env.base --env-file=./dev-scripts/env.dev"
+DEV_SUPERUSER_PASSWORD="devpass"
+
+if [ $1 = "django" ]; then
+  $DEV_COMPOSE run --rm gunicorn python manage.py "${@:2}"
+elif [ $1 = "sh" ]; then
+  $DEV_COMPOSE exec $2 bash
+elif [ $1 = "test" ]; then
+  $DEV_COMPOSE run --rm gunicorn pytest
+elif [ $1 = "format" ]; then
+  $DEV_COMPOSE run --rm gunicorn sh -c 'isort . && black .'
+elif [ $1 = "tmux" ]; then
+  ./dev-scripts/tmux_dev.sh
+elif [ $1 = "devsuperuser" ]; then
+  $DEV_COMPOSE run --rm gunicorn sh -c "export DJANGO_SUPERUSER_PASSWORD='devpass' && python manage.py createsuperuser --noinput --username $2 --email $2@$2.com"
+elif [ $1 = "dev" ]; then
+    if test -z "$DEV_KEY_PATH" 
+    then
+        echo "DEV_KEY_PATH is empty"
+    else
+        docker run -it --rm --hostname=$PROJECT_NAME-dev --name=$PROJECT_NAME-dev -v .:/app/src -v $DEV_KEY_PATH:/id_rsa $PROJECT_NAME-dev bash
+    fi
+elif [ $1 = "builddev" ]; then
+    docker build . --file=dev-scripts/Dockerfile --tag $PROJECT_NAME-dev
+elif [ $1 = "buildtest" ]; then
+    docker build . --file=dev-scripts/Dockerfile.playwright --tag $PROJECT_NAME-playwright
+elif [ $1 = "runtest" ]; then
+    docker run -it --rm --hostname=$PROJECT_NAME-tests --name=$PROJECT_NAME-tests -v .:/app/src --ipc=host --network=$PROJECT_NAME $PROJECT_NAME-playwright npx playwright test
+elif [ $1 = "generatetypes" ]; then
+    $DEV_COMPOSE exec nextjs npx -y openapi-typescript@6.7.4 http://gunicorn:8000/api/openapi.json --output utils/apiTypes.ts
+elif [ $1 = "deploystage" ]; then
+    ./dev-scripts/deploy.sh stage.meta-game.io dev-scripts/env.stage
+elif [ $1 = "deployprod" ]; then
+    ./dev-scripts/deploy.sh meta-game.io dev-scripts/env.prod
+elif [ $1 = "djangoprod" ]; then
+    ssh root@meta-game.io "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"
+elif [ $1 = "logsprod" ]; then
+    ssh root@meta-game.io "docker service logs ${PROJECT_NAME}_${2}"
+elif [ $1 = "gencerts" ]; then
+    ./dev-scripts/generate_certs.sh ${PROJECT_NAME} ${PROJECT_DOMAIN}
+    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./dev-scripts/ssl/${PROJECT_NAME}.crt
+else
+  $DEV_COMPOSE $@
+fi
