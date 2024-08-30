@@ -1,0 +1,23 @@
+{
+	"name": "<project_name> dev container",
+	"containerUser": "greyone",
+	"remoteUser": "greyone",
+	"build": {
+		"context": "..",
+		"dockerfile": "../dev-scripts/Dockerfile",
+		"args": {"tag":"<project_name>-vscode-dev"}
+	},
+	"runArgs": ["--name", "<project_name>_devcontainer", "--hostname", "<project_name>-dev"],
+
+	"features": {},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-azuretools.vscode-docker",
+				"dbaeumer.vscode-eslint"
+			]
+		}
+	}
+}
