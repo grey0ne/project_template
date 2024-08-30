@@ -59,16 +59,8 @@ coverage.xml
 *.log
 local_settings.py
 
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
 # Sphinx documentation
 docs/_build/
-
 
 # PyBuilder
 target/
@@ -79,12 +71,6 @@ target/
 # pyenv
 .python-version
 
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
 # dotenv
 .env
 
@@ -92,10 +78,6 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
-.vscode
-# Spyder project settings
-.spyderproject
-.spyproject
 
 # Rope project settings
 .ropeproject
@@ -113,6 +95,7 @@ backend/poetry.lock
 *.pyc
 *.db
 *.pid
+
 
 # node
 node_modules
@@ -135,6 +118,8 @@ dev-scripts/env.stage
 dev-scripts/env.prod
 dev-scripts/ssl/*.key
 dev-scripts/ssl/*.crt
+
+.vscode
 
 # Playwright
 /test-results/

@@ -1,0 +1,74 @@
+name: ${PROJECT_NAME}
+
+services:
+  django:
+    command: python -m uvicorn --reload --lifespan off --host 0.0.0.0 --port 8000 application.asgi:application 
+    image: ${PROJECT_NAME}-django
+    container_name: ${PROJECT_NAME}-django
+    build:
+      context: ../backend
+    env_file:
+      - ../dev-scripts/env.base
+      - ../dev-scripts/env.dev
+    volumes:
+      - ../backend:/app/src
+    depends_on:
+      - postgres
+
+  nextjs:
+    image: ${PROJECT_NAME}-nextjs
+    container_name: ${PROJECT_NAME}-nextjs
+    build:
+      context: ../spa
+    env_file:
+      - ../dev-scripts/env.base
+      - ../dev-scripts/env.dev
+    volumes:
+      - ../spa/app:/app/app
+      - ../spa/components:/app/components
+      - ../spa/utils:/app/utils
+      - ../spa/.eslintrc.js:/app/.eslintrc.js
+      - ../spa/next.config.mjs:/app/next.config.mjs
+      - ../spa/sentry.client.config.ts:/app/sentry.client.config.ts
+      - ../spa/sentry.edge.config.ts:/app/sentry.edge.config.ts
+      - ../spa/sentry.server.config.ts:/app/sentry.server.config.ts
+
+  minio:
+    command: server /data --console-address ":9001"
+    image: "minio/minio:latest"
+    container_name: ${PROJECT_NAME}-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${PROJECT_NAME}
+      MINIO_ROOT_PASSWORD: ${PROJECT_NAME}
+    volumes:
+      - minio-data:/data
+
+  nginx:
+    image: "nginx:1.25.3-alpine-slim"
+    container_name: ${PROJECT_NAME}-nginx
+    volumes:
+      - ../nginx/conf/nginx_dev.conf:/etc/nginx/nginx.conf
+      - ../dev-scripts/ssl:/app/ssl
+    environment:
+      DOMAIN: ${PROJECT_DOMAIN}
+
+  postgres:
+    image: "postgres:16.1-alpine"
+    container_name: ${PROJECT_NAME}-postgres
+    environment:
+      POSTGRES_PASSWORD: ${PROJECT_NAME}
+      POSTGRES_USER: ${PROJECT_NAME}
+      POSTGRES_DB: ${PROJECT_NAME}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+    driver: local
+    name: ${PROJECT_NAME}-postgres-data
+  minio-data:
+    driver: local
+    name: ${PROJECT_NAME}-minio-data

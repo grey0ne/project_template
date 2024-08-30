@@ -1,0 +1,21 @@
+
+services:
+  django:
+    ports:
+      - "8000:8000"
+
+  nginx:
+    depends_on:
+      - django
+      - nextjs
+    ports:
+      - "80:80"
+      - "443:443"
+
+  nextjs:
+    ports:
+      - "3000:3000"
+
+networks:
+  default:
+    name: ${PROJECT_NAME}

@@ -1,0 +1,30 @@
+
+services:
+  django:
+    image: ${DJANGO_IMAGE}
+    command: gunicorn -w 4 -b 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker application.asgi
+    env_file:
+      - env.base
+      - env
+
+  nginx:
+    image: ${NGINX_IMAGE}
+    volumes:
+      - certbot-certificates:/etc/letsencrypt
+      - certbot-challenge:/var/www/certbot
+    environment:
+      DOMAIN: ${PROJECT_DOMAIN}
+
+  nextjs:
+    image: ${NEXTJS_IMAGE}
+    env_file:
+      - env.base
+      - env
+
+volumes: 
+  certbot-certificates:
+    name: certbot-certificates
+    external: true
+  certbot-challenge:
+    driver: local
+    name: certbot-challenge
