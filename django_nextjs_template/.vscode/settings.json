@@ -1,0 +1,4 @@
+{
+    "typescript.tsdk": "/app/node_modules/typescript/lib",
+    "eslint.options": { "overrideConfigFile": "/workspaces/<project_name>/spa/.eslintrc.js" }
+}

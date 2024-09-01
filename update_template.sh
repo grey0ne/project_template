@@ -17,6 +17,7 @@ do
         echo "Transforming $i"
     fi
 done
+mv tmp_templ/.gitignore.template tmp_templ/.gitignore
 
 rsync -r tmp_templ/ $TARGET_DIR/
 rm -rf tmp_templ
