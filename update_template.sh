@@ -1,8 +1,9 @@
-while getopts t:n:r: flag
+while getopts t:n:d:r: flag
 do
     case "${flag}" in
         t) TEMPLATE=${OPTARG};;
         n) PROJECT_NAME=${OPTARG};;
+        d) PROJECT_DOMAIN=${OPTARG};;
         r) TARGET_DIR=${OPTARG};;
     esac
 done
@@ -14,7 +15,8 @@ do
     if test -f "$i"
     then
         sed -i '' "s/<project_name>/$PROJECT_NAME/g" $i
-        echo "Transforming $i"
+        sed -i '' "s/<project_domain>/$PROJECT_DOMAIN/g" $i
+        echo "Transforming $i DOMAIN: $PROJECT_DOMAIN NAME: $PROJECT_NAME"
     fi
 done
 mv tmp_templ/.gitignore.template tmp_templ/.gitignore
