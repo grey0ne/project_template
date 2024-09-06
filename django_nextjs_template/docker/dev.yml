@@ -41,8 +41,8 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_ROOT_USER: ${PROJECT_NAME}
-      MINIO_ROOT_PASSWORD: ${PROJECT_NAME}
+      MINIO_ROOT_USER: minio_${PROJECT_NAME}
+      MINIO_ROOT_PASSWORD: minio_${PROJECT_NAME}
     volumes:
       - minio-data:/data
 
