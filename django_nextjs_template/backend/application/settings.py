@@ -21,7 +21,7 @@ CSRF_TRUSTED_ORIGINS = [f'https://{DOMAIN}', 'http://{DOMAIN}']
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
-DEBUG = False # type: ignore
+DEBUG = bool(config_get('DJANGO_DEBUG', default=False))
 
 ALLOWED_HOSTS = [
     'django',
@@ -41,9 +41,6 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'application.urls'
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.steam.SteamOpenId',
-    'social_core.backends.github.GithubOAuth2',
-    'social_core.backends.strava.StravaOAuth',
     'application.backends.AsyncModelBackend',
 )
 
@@ -189,11 +186,6 @@ if SENTRY_DSN is not None:
     )
 
 from application.project_settings import *  # noqa used to customize templated settings
-
-try:
-    from local_settings import *  # noqa
-except ImportError:
-    pass
 
 SESSION_COOKIE_SECURE = not DEBUG
 
