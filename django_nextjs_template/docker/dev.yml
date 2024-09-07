@@ -24,14 +24,7 @@ services:
       - ../dev-scripts/env.base
       - ../dev-scripts/env.dev
     volumes:
-      - ../spa/app:/app/app
-      - ../spa/components:/app/components
-      - ../spa/utils:/app/utils
-      - ../spa/.eslintrc.js:/app/.eslintrc.js
-      - ../spa/next.config.mjs:/app/next.config.mjs
-      - ../spa/sentry.client.config.ts:/app/sentry.client.config.ts
-      - ../spa/sentry.edge.config.ts:/app/sentry.edge.config.ts
-      - ../spa/sentry.server.config.ts:/app/sentry.server.config.ts
+      - ../spa:/app
 
   minio:
     command: server /data --console-address ":9001"
