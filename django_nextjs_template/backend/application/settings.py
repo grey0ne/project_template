@@ -24,7 +24,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 DEBUG = False # type: ignore
 
 ALLOWED_HOSTS = [
-    'gunicorn',
+    'django',
     DOMAIN,
 ]
 
