@@ -8,12 +8,8 @@ WORKDIR /app
 COPY backend/pyproject.toml /app/
 RUN poetry install
 
-COPY spa/package.json /app/
-RUN npm install
-
 RUN chown -R greyone:greyone /app
 
-ENV NODE_ENV development
-ENV NODE_PATH /app/node_modules
+ENV NODE_ENV=development
 
 WORKDIR /app/src
