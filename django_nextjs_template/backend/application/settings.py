@@ -40,7 +40,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'application.urls'
 
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = ( # type: ignore Allow redefinition in project settings
     'application.backends.AsyncModelBackend',
 )
 
@@ -180,7 +180,7 @@ LOGGING = {
 SENTRY_DSN = config_get('SENTRY_DSN', default=None)
 if SENTRY_DSN is not None:
     sentry_sdk.init(
-        dsn=config_get('SENTRY_DSN', default=None),
+        dsn=str(config_get('SENTRY_DSN', default=None)),
         integrations=[DjangoIntegration()],
         send_default_pii=True,
     )
