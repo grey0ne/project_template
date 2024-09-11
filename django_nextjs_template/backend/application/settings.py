@@ -155,29 +155,6 @@ EMAIL_SUBJECT_PREFIX = '[METAGAME] '
 
 # END EMAIL SETTINGS #
 
-
-LOGGING = {
-    'version': 1,
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-        }
-    },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        }
-    }
-}
-
 SENTRY_DSN = config_get('SENTRY_DSN', default=None)
 if SENTRY_DSN is not None:
     sentry_sdk.init(

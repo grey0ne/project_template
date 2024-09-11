@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY pyproject.toml /app/
 
-RUN python -mpip install --upgrade pip --root-user-action
+RUN python -mpip install --upgrade pip --root-user-action=ignore
 RUN python -mpip install poetry && poetry install
 
 WORKDIR /app/src
