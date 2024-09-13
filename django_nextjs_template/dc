@@ -51,6 +51,11 @@ elif [ $1 = "initinfra" ]; then
     source ./dev-scripts/env.base
     source ./dev-scripts/env.prod
     python3 ./dev-scripts/do_init.py
+elif [ $1 = "initprod" ]; then
+    set -a
+    source ./dev-scripts/env.base
+    source ./dev-scripts/env.prod
+    ./dev-scripts/production_setup.sh $PROJECT_DOMAIN
 else
   $DEV_COMPOSE $@
 fi

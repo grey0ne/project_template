@@ -20,7 +20,7 @@ function print_error () {
 function build_image () {
     set -e
     print_status "Building $1"
-    docker build -t $REGISTRY_HOSTNAME/$PROJECT_NAME-$1 -f $2 $3 --build-arg SENTRY_AUTH_TOKEN --platform linux/amd64
+    docker build --secret id=sentry_auth,env=SENTRY_AUTH_TOKEN  -t $REGISTRY_HOSTNAME/$PROJECT_NAME-$1 -f $2 $3  --platform linux/amd64
     BUILD_RESULT_STATUS=$?
     if [ ${BUILD_RESULT_STATUS} -ne 0 ]; then
         print_error "$1 Build failed!"

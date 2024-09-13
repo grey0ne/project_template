@@ -16,7 +16,6 @@ do
     then
         sed -i '' "s/<project_name>/$PROJECT_NAME/g" $i
         sed -i '' "s/<project_domain>/$PROJECT_DOMAIN/g" $i
-        echo "Transforming $i DOMAIN: $PROJECT_DOMAIN NAME: $PROJECT_NAME"
     fi
 done
 mv tmp_templ/.gitignore.template tmp_templ/.gitignore

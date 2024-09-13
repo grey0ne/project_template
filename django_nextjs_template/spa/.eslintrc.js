@@ -8,6 +8,7 @@ module.exports = {
         indent: ['error', 4],
         "no-unused-vars": "off",
         "@typescript-eslint/no-explicit-any": "off",
+        "@next/next/no-img-element": "off",
         "@typescript-eslint/no-unused-vars": ["error"],
         'react/jsx-indent': ['error', 4],
         'max-len': ['error', { code: 140 }],
