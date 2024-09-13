@@ -46,6 +46,11 @@ elif [ $1 = "logsprod" ]; then
 elif [ $1 = "gencerts" ]; then
     ./dev-scripts/generate_certs.sh ${PROJECT_NAME} ${PROJECT_DOMAIN}
     sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./dev-scripts/ssl/${PROJECT_NAME}.crt
+elif [ $1 = "initinfra" ]; then
+    set -a
+    source ./dev-scripts/env.base
+    source ./dev-scripts/env.prod
+    python3 ./dev-scripts/do_init.py
 else
   $DEV_COMPOSE $@
 fi

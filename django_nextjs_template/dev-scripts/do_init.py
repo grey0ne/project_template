@@ -4,33 +4,30 @@ import urllib.parse
 import urllib.request
 import json
 import fileinput
-from enum import Enum
 from typing import Any, NamedTuple
 
-DO_TOKEN = os.getenv("DO_TOKEN")
+DO_TOKEN = os.getenv("DO_TOKEN", '')
 OS_IMAGE = os.getenv("DO_OS_IMAGE", "ubuntu-24-04-x64")
 REGION = os.getenv("DO_REGION", "ams3")
-DROPLET_NAME = "gry-one-app"
 DROPLET_SIZE = os.getenv("DO_SIZE", "s-1vcpu-1gb")
 SSH_FINGERPRINT = os.getenv("DO_KEY_FINGERPRINT")
 DROPLET_TAGS = ["auto-created"]
-DOMAIN = "gry.one"
+DOMAIN = os.getenv("PROJECT_DOMAIN", '')
 PG_NODES_NUM = 1
 PG_VERSION = "14"
 PG_SIZE = "db-s-1vcpu-1gb"
 PG_STORAGE_SIZE = 15000 # 15GB
 PG_CLUSTER_NAME = "gry-one-db"
-PG_USERNAME = "gry"
-PROJECT_NAME = "gry.one"
+PG_USERNAME = os.getenv("DATABASE_USER", '')
+PROJECT_NAME = os.getenv("PROJECT_NAME", '')
 PROJECT_DESCRIPTION = "gry.one project"
+DROPLET_NAME = f"{PROJECT_NAME}-app"
 
 DO_API_DOMAIN = "https://api.digitalocean.com"
 DROPLETS_URL = f"{DO_API_DOMAIN}/v2/droplets"
 
-class Method(Enum):
-    GET = "GET"
-    POST = "POST"
-
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+PROD_ENV_FILE = os.path.join(SCRIPTS_DIR, 'env.prod')
 
 DO_HEADERS = {
     "Authorization": f"Bearer {DO_TOKEN}",
@@ -118,10 +115,14 @@ class DOException(Exception):
     pass
 
 
-def replace_line(filename: str, pattern: str, replacement: str):
-    with fileinput.input(files=(filename, ), encoding="utf-8") as f:
+def save_env_option(option_name: str, value: str):
+    with fileinput.input(files=(PROD_ENV_FILE, ), encoding="utf-8", inplace=True) as f:
         for line in f:
-            print(line.replace(pattern, replacement), end='')
+            if f'{option_name}=' in line:
+                result = f'{option_name}={value}\n'
+            else:
+                result = line
+            print(result, end='')
 
 
 def do_get_request(url: str) -> dict[str, Any]:
@@ -232,9 +233,10 @@ def get_pg_user(cluster_id: str, username: str):
     url = f"{DO_API_DOMAIN}/v2/databases/{cluster_id}/users?name={username}"
     data = do_get_request(url)
     users = data["users"]
-    for user in users:
-        if user["name"] == username:
-            return user
+    if users is not None:
+        for user in users:
+            if user["name"] == username:
+                return user
 
 def get_or_create_pg_user(cluster_id: str, username: str):
     existing_user = get_pg_user(cluster_id, username)
@@ -273,24 +275,39 @@ def create_domain_record(domain: str, droplet_ip: str):
     print(f"DNS record created for {domain} pointing to {droplet_ip}")
     return response["domain_record"]
 
+REQUIRED_VARS: dict[str, str] = {
+    'DO_TOKEN': DO_TOKEN,
+    'PROJECT_NAME': PROJECT_NAME,
+    'DOMAIN': DOMAIN,
+    'DATABASE_USER': PG_USERNAME
+}
 
 def init_do_infra():
-    if DO_TOKEN is not None:
-        project_data = get_or_create_project(PROJECT_NAME, PROJECT_DESCRIPTION)
-        droplet_data = get_or_create_droplet(DROPLET_NAME, project_data["id"])
-        public_address = get_public_address(droplet_data)
-        if public_address is not None:
-            print(f"Creating DNS record for droplet {DROPLET_NAME} with IP {public_address}")
-            create_domain_record(DOMAIN, public_address)
-        else:
-            print(f"Droplet {DROPLET_NAME} does not have public IP address yet")
-        print("Status: ", droplet_data["status"])
-        print("Public IP: ", get_public_address(droplet_data))
-        pg_cluster = get_or_create_pg_cluster(PG_CLUSTER_NAME, project_data["id"])
-        print("Postgres cluster status: ", pg_cluster["status"])
+    for var_name, value in REQUIRED_VARS.items():
+        if not value:
+            print(f"{var_name} is not set")
+            return
+    project_data = get_or_create_project(PROJECT_NAME, PROJECT_DESCRIPTION)
+    droplet_data = get_or_create_droplet(DROPLET_NAME, project_data["id"])
+    public_address = get_public_address(droplet_data)
+    if public_address is not None:
+        print(f"Creating DNS record for droplet {DROPLET_NAME} with IP {public_address}")
+        create_domain_record(DOMAIN, public_address)
+    else:
+        print(f"Droplet {DROPLET_NAME} does not have public IP address yet")
+    print("Status: ", droplet_data["status"])
+    print("Public IP: ", get_public_address(droplet_data))
+    pg_cluster = get_or_create_pg_cluster(PG_CLUSTER_NAME, project_data["id"])
+    cluster_status = pg_cluster['status']
+    print("Postgres cluster status: ", pg_cluster["status"])
+    save_env_option('DATABASE_HOST', pg_cluster['connection']['host'])
+    if cluster_status != "creating":
         pg_user = get_or_create_pg_user(pg_cluster["id"], PG_USERNAME)
+        if pg_user['password']:
+            save_env_option('DATABASE_PASSWORD', pg_user['password'])
         print("PG user: ", pg_user)
     else:
-        print("DO_TOKEN is not set")
+        print("Postgres Cluster is still creating")
+
 
 init_do_infra()

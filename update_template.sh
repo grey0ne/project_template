@@ -24,5 +24,7 @@ mv tmp_templ/.gitignore.template tmp_templ/.gitignore
 rsync -r tmp_templ/ $TARGET_DIR/
 cp -n tmp_templ/dev-scripts/env.prod.template $TARGET_DIR/dev-scripts/env.prod
 rm $TARGET_DIR/dev-scripts/env.prod.template
+cp -n tmp_templ/dev-scripts/env.stage.template $TARGET_DIR/dev-scripts/env.stage
+rm $TARGET_DIR/dev-scripts/env.stage.template
 rm -rf tmp_templ
 
