@@ -3,6 +3,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import json
+import fileinput
 from enum import Enum
 from typing import Any, NamedTuple
 
@@ -115,6 +116,13 @@ def request(
 
 class DOException(Exception):
     pass
+
+
+def replace_line(filename: str, pattern: str, replacement: str):
+    with fileinput.input(files=(filename, ), encoding="utf-8") as f:
+        for line in f:
+            print(line.replace(pattern, replacement), end='')
+
 
 def do_get_request(url: str) -> dict[str, Any]:
     response = request(url=url, method="GET", headers=DO_HEADERS)
