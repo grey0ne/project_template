@@ -2,8 +2,7 @@
 
 set -e
 
-DEPLOY_HOSTNAME=$1
-ENV_FILE=$2
+ENV_FILE=$1
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -33,6 +32,8 @@ function build_image () {
 
 source dev-scripts/env.base
 source $ENV_FILE
+
+DEPLOY_HOSTNAME=$PROJECT_DOMAIN
 
 print_status "Collecting static files for django"
 docker run --rm -i --env-file=./dev-scripts/env.base --env-file=./dev-scripts/env.dev -e BUILD_STATIC=true -v ./backend:/app/src $PROJECT_NAME-django python manage.py collectstatic --noinput

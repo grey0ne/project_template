@@ -34,7 +34,6 @@ def init_do_infra():
     pg_cluster = get_or_create_pg_cluster(PG_CLUSTER_NAME, project_data["id"])
     cluster_status = pg_cluster['status']
     cluster_id = pg_cluster['id']
-    print("Postgres cluster status: ", pg_cluster["status"])
     save_env_option('DATABASE_HOST', pg_cluster['connection']['host'])
     while cluster_status == "creating":
         print(f"Postgres Cluster status is {cluster_status}. Cluster init could take up to 5 minutes")

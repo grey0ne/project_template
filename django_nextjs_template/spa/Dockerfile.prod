@@ -7,15 +7,9 @@ WORKDIR /app
 
 COPY package.json tsconfig.json /app/
 
-RUN npm install -y
+RUN npm install -y --omit=dev
 
 COPY . /app/
-
-RUN npx next telemetry disable
-
-RUN --mount=type=secret,id=sentry_auth \
-    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth) && \
-    npm run build
 
 CMD ["npm", "run", "start"]
 

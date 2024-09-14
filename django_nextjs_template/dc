@@ -20,15 +20,6 @@ elif [ $1 = "tmux" ]; then
   ./dev-scripts/tmux_dev.sh
 elif [ $1 = "devsuperuser" ]; then
   $DEV_COMPOSE run --rm django sh -c "export DJANGO_SUPERUSER_PASSWORD='devpass' && python manage.py createsuperuser --noinput --username $2 --email $2@$2.com"
-elif [ $1 = "dev" ]; then
-    if test -z "$DEV_KEY_PATH" 
-    then
-        echo "DEV_KEY_PATH is empty"
-    else
-        docker run -it --rm --hostname=$PROJECT_NAME-dev --name=$PROJECT_NAME-dev -v .:/app/src -v $DEV_KEY_PATH:/id_rsa $PROJECT_NAME-dev bash
-    fi
-elif [ $1 = "builddev" ]; then
-    docker build . --file=dev-scripts/Dockerfile --tag $PROJECT_NAME-dev
 elif [ $1 = "buildtest" ]; then
     docker build . --file=dev-scripts/Dockerfile.playwright --tag $PROJECT_NAME-playwright
 elif [ $1 = "runtest" ]; then
@@ -36,9 +27,9 @@ elif [ $1 = "runtest" ]; then
 elif [ $1 = "generatetypes" ]; then
     $DEV_COMPOSE exec nextjs npx -y openapi-typescript@6.7.4 http://django:8000/api/openapi.json --output utils/apiTypes.ts
 elif [ $1 = "deploystage" ]; then
-    ./dev-scripts/deploy.sh stage.meta-game.io dev-scripts/env.stage
+    ./dev-scripts/deploy.sh dev-scripts/env.stage
 elif [ $1 = "deployprod" ]; then
-    ./dev-scripts/deploy.sh meta-game.io dev-scripts/env.prod
+    ./dev-scripts/deploy.sh dev-scripts/env.prod
 elif [ $1 = "djangoprod" ]; then
     ssh root@meta-game.io "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"
 elif [ $1 = "logsprod" ]; then
