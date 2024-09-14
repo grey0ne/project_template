@@ -21,6 +21,7 @@ const sentryWebpackPluginOptions = {
     authToken: process.env.SENTRY_AUTH_TOKEN,
   
     silent: true, // Suppresses all logs
+    autoInstrumentServerFunctions: false,
     hideSourceMaps: false,
     disableLogger: true
   
