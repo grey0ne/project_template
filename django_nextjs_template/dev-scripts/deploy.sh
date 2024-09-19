@@ -42,6 +42,8 @@ export DOCKER_CLI_HINTS="false"
 export NGINX_IMAGE=$(build_image "nginx" "nginx/Dockerfile" ".")
 rm -rf backend/static
 export DJANGO_IMAGE=$(build_image "django" "backend/Dockerfile.prod" "backend")
+cd spa
+npm run build
 export NEXTJS_IMAGE=$(build_image "nextjs" "spa/Dockerfile.prod" "spa")
 print_status "$NEXTJS_IMAGE"
 
