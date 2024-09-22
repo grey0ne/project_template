@@ -25,5 +25,7 @@ cp -n tmp_templ/dev-scripts/env.prod.template $TARGET_DIR/dev-scripts/env.prod
 rm $TARGET_DIR/dev-scripts/env.prod.template
 cp -n tmp_templ/dev-scripts/env.stage.template $TARGET_DIR/dev-scripts/env.stage
 rm $TARGET_DIR/dev-scripts/env.stage.template
+cp -n tmp_templ/spa/next.config.mjs.template $TARGET_DIR/spa/next.config.mjs
+rm $TARGET_DIR/spa/next.config.mjs.template
 rm -rf tmp_templ
 
