@@ -15,5 +15,3 @@ COPY . /app/src
 WORKDIR /app/src
 
 RUN rm Dockerfile Dockerfile.prod pyproject.toml
-
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "-k", "application.worker.CustomUvicornWorker", "application.asgi"]

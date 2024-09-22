@@ -90,7 +90,7 @@ S3_ACCESS_KEY_ID = config_get("S3_ACCESS_KEY_ID")
 S3_SECRET_KEY = config_get("S3_SECRET_KEY")
 S3_ENDPOINT = config_get("S3_ENDPOINT_URL", default='http://minio:9000')
 S3_DOMAIN = config_get("S3_DOMAIN", default=DOMAIN)
-S3_SIGNATURE_VERSION = config_get("S3_SIGNATURE_VERSION", default='s3')
+S3_SIGNATURE_VERSION = config_get("S3_SIGNATURE_VERSION", default='v4')
 
 MEDIA_S3_STORAGE = {
     "BACKEND": "application.s3_storage.CustomS3Storage",
@@ -151,7 +151,7 @@ EMAIL_HOST_USER = config_get('EMAIL_USER', default=None)
 SERVER_EMAIL = config_get('EMAIL_USER', default=None)
 EMAIL_PORT = config_get('EMAIL_PORT', default=None)
 EMAIL_USE_SSL = True
-EMAIL_SUBJECT_PREFIX = '[METAGAME] '
+EMAIL_SUBJECT_PREFIX = f'[{PROJECT_NAME}] '
 
 # END EMAIL SETTINGS #
 
