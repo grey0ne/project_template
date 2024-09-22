@@ -25,6 +25,7 @@ def init_do_infra():
             print(f"{var_name} is not set")
             return
     project_data = get_or_create_project(PROJECT_NAME, PROJECT_DESCRIPTION)
+    print(f"Using DO project {PROJECT_NAME} with id {project_data['id']}")
     droplet_data = get_or_create_droplet(DROPLET_NAME, project_data["id"])
     public_address = get_public_address(droplet_data)
     if public_address is None:

@@ -93,7 +93,7 @@ S3_DOMAIN = config_get("S3_DOMAIN", default=DOMAIN)
 S3_SIGNATURE_VERSION = config_get("S3_SIGNATURE_VERSION", default='s3')
 
 MEDIA_S3_STORAGE = {
-    "BACKEND": "application.storages.CustomS3Storage",
+    "BACKEND": "application.s3_storage.CustomS3Storage",
     "OPTIONS": {
         'bucket_name': config_get(
             "S3_BUCKET_NAME", default=f'{PROJECT_NAME}-media'

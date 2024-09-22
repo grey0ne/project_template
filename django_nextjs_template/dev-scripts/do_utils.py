@@ -185,7 +185,8 @@ def get_or_create_droplet(name: str, project_id: str) -> dict[str, Any]:
         time.sleep(STATUS_CHECK_INTERVAL)
         updated_droplet_data = get_existing_droplet(name)
         droplet_status = updated_droplet_data and updated_droplet_data['status']
-        public_address = get_public_address(droplet_data)
+        if updated_droplet_data:
+            public_address = get_public_address(updated_droplet_data)
     return droplet_data
 
 
