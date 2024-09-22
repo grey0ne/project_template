@@ -1,4 +1,4 @@
-FROM python:3.12.1-slim
+FROM python:3.12.6-slim
 
 ENV PYTHONUNBUFFERED=1
 ENV POETRY_VIRTUALENVS_CREATE=false
@@ -7,6 +7,7 @@ WORKDIR /app
 
 COPY pyproject.toml /app/
 
+RUN python -mpip install --upgrade pip --root-user-action=ignore
 RUN python -mpip install poetry && poetry install
 
 COPY . /app/src
