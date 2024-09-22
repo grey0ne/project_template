@@ -44,6 +44,7 @@ rm -rf backend/static
 export DJANGO_IMAGE=$(build_image "django" "backend/Dockerfile.prod" "backend")
 cd spa
 npm run build
+cd ../
 export NEXTJS_IMAGE=$(build_image "nextjs" "spa/Dockerfile.prod" "spa")
 print_status "$NEXTJS_IMAGE"
 
