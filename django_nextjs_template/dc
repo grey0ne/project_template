@@ -31,9 +31,11 @@ elif [ $1 = "deploystage" ]; then
 elif [ $1 = "deployprod" ]; then
     ./dev-scripts/deploy.sh dev-scripts/env.prod
 elif [ $1 = "djangoprod" ]; then
-    ssh root@meta-game.io "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"
+    source ./dev-scripts/env.prod
+    ssh root@$PROJECT_DOMAIN "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"
 elif [ $1 = "logsprod" ]; then
-    ssh root@meta-game.io "docker service logs ${PROJECT_NAME}_${2}"
+    source ./dev-scripts/env.prod
+    ssh root@$PROJECT_DOMAIN "docker service logs ${PROJECT_NAME}_${2}"
 elif [ $1 = "gencerts" ]; then
     ./dev-scripts/generate_certs.sh ${PROJECT_NAME} ${PROJECT_DOMAIN}
     sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./dev-scripts/ssl/${PROJECT_NAME}.crt
