@@ -25,9 +25,9 @@ print_status "Init swarm"
 docker swarm init --advertise-addr $RESULT_ADDR
 cd /app/$PROJECT_NAME
 print_status "Update image for migrations"
-docker pull registry.meta-game.io/metagame-django
+docker pull $REGISTRY_HOSTNAME/$PROJECT_NAME-django
 print_status "Perform migrations"
-docker run --rm -i --env-file=env.base --env-file=env registry.meta-game.io/metagame-django python manage.py migrate
+docker run --rm -i --env-file=env.base --env-file=env $REGISTRY_HOSTNAME/$PROJECT_NAME-django python manage.py migrate
 print_status "Update swarm"
 docker stack config -c common.yml -c prod.yml | docker stack deploy --with-registry-auth --detach=false -c - $PROJECT_NAME
 print_status "Prune images"
