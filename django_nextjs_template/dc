@@ -25,7 +25,7 @@ elif [ $1 = "buildtest" ]; then
 elif [ $1 = "runtest" ]; then
     docker run -it --rm --hostname=$PROJECT_NAME-tests --name=$PROJECT_NAME-tests -v .:/app/src --ipc=host --network=$PROJECT_NAME $PROJECT_NAME-playwright npx playwright test
 elif [ $1 = "generatetypes" ]; then
-    $DEV_COMPOSE exec nextjs npx -y openapi-typescript@6.7.4 http://django:8000/api/openapi.json --output utils/apiTypes.ts
+    $DEV_COMPOSE exec nextjs npx -y openapi-typescript@7.4.1 http://django:8000/api/openapi.json --output api/apiTypes.ts
 elif [ $1 = "deploystage" ]; then
     ./dev-scripts/deploy.sh dev-scripts/env.stage
 elif [ $1 = "deployprod" ]; then
