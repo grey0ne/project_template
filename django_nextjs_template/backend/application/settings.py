@@ -4,7 +4,8 @@ import sys
 import django_stubs_ext
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-from application.settings_helper import config_get
+from application.settings_helper import config_get, config_get_str
+from typing import Any
 
 django_stubs_ext.monkeypatch()
 
@@ -13,7 +14,7 @@ PROJECT_DIR = os.path.dirname(SOURCE_DIR)
 
 SECRET_KEY = config_get('DJANGO_SECRET_KEY')
 
-DOMAIN = config_get('PROJECT_DOMAIN')
+DOMAIN = config_get_str('PROJECT_DOMAIN')
 PROJECT_NAME = config_get('PROJECT_NAME')
 
 CSRF_COOKIE_HTTPONLY = False
@@ -23,7 +24,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 DEBUG = bool(config_get('DJANGO_DEBUG', default=False))
 
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS: list[str] = [
     'django',
     DOMAIN,
 ]
@@ -44,7 +45,7 @@ AUTHENTICATION_BACKENDS = ( # type: ignore Allow redefinition in project setting
     'application.backends.AsyncModelBackend',
 )
 
-TEMPLATES = [
+TEMPLATES: list[dict[str, Any]] = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
@@ -74,13 +75,13 @@ else:
     db_options = {"options": "-c statement_timeout=500"} 
 
 
-DATABASES = {
+DATABASES: dict[str, Any] = {
     "default": {
-        "NAME": config_get('DATABASE_NAME'),
-        "USER": config_get('DATABASE_USER'),
-        "HOST": config_get('DATABASE_HOST'),
-        "PORT": config_get('DATABASE_PORT', default='5432'),
-        "PASSWORD": config_get('DATABASE_PASSWORD'),
+        "NAME": config_get_str('DATABASE_NAME'),
+        "USER": config_get_str('DATABASE_USER'),
+        "HOST": config_get_str('DATABASE_HOST'),
+        "PORT": config_get_str('DATABASE_PORT', default='5432'),
+        "PASSWORD": config_get_str('DATABASE_PASSWORD'),
         "ENGINE": "django.db.backends.postgresql",
         "OPTIONS": db_options
     }
@@ -92,7 +93,7 @@ S3_ENDPOINT = config_get("S3_ENDPOINT_URL", default='http://minio:9000')
 S3_DOMAIN = config_get("S3_DOMAIN", default=DOMAIN)
 S3_SIGNATURE_VERSION = config_get("S3_SIGNATURE_VERSION", default='v4')
 
-MEDIA_S3_STORAGE = {
+MEDIA_S3_STORAGE: dict[str, Any] = {
     "BACKEND": "application.s3_storage.CustomS3Storage",
     "OPTIONS": {
         'bucket_name': config_get(
@@ -114,7 +115,7 @@ MEDIA_S3_STORAGE = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(SOURCE_DIR, 'static')
 
-STORAGES = {
+STORAGES: dict[str, Any] = {
     "default": MEDIA_S3_STORAGE,
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
