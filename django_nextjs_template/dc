@@ -7,6 +7,8 @@ source ./dev-scripts/env.dev
 
 DEV_COMPOSE="docker compose -f docker/common.yml -f docker/dev.yml --env-file=./dev-scripts/env.base --env-file=./dev-scripts/env.dev"
 DEV_SUPERUSER_PASSWORD="devpass"
+PROJECT_DIR=$(pwd)
+PROJECT_TEMPLATE_DIR="$HOME/projects/project_template"
 
 if [ $1 = "django" ]; then
   $DEV_COMPOSE run --rm django python manage.py "${@:2}"
@@ -42,14 +44,15 @@ elif [ $1 = "gencerts" ]; then
 elif [ $1 = "initinfra" ]; then
     set -a
     source .env
-    source ./dev-scripts/env.base
     source ./dev-scripts/env.prod
     python3 ./dev-scripts/do_init.py
 elif [ $1 = "initprod" ]; then
     set -a
-    source ./dev-scripts/env.base
     source ./dev-scripts/env.prod
     ./dev-scripts/production_setup.sh $PROJECT_DOMAIN
+elif [ $1 = "updatetemplate" ]; then
+    source ./dev-scripts/env.prod
+    $PROJECT_TEMPLATE_DIR/update_template.sh -t django_nextjs_template -n $PROJECT_NAME -r $PROJECT_DIR -d $PROJECT_DOMAIN
 else
   $DEV_COMPOSE $@
 fi

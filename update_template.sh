@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 while getopts t:n:d:r: flag
 do
     case "${flag}" in
@@ -8,9 +12,13 @@ do
     esac
 done
 
-rm -rf tmp_templ
-cp -r $TEMPLATE tmp_templ
-for i in $(find tmp_templ);
+TMP_DIR=$SCRIPT_DIR/tmp_templ
+TEMPLATE_DIR=$SCRIPT_DIR/$TEMPLATE
+
+echo "Updating $TARGET_DIR with template $TEMPLATE_DIR"
+rm -rf $TMP_DIR
+cp -r $TEMPLATE_DIR $TMP_DIR
+for i in $(find $TMP_DIR);
 do
     if test -f "$i"
     then
@@ -18,14 +26,14 @@ do
         sed -i '' "s/<project_domain>/$PROJECT_DOMAIN/g" $i
     fi
 done
-mv tmp_templ/.gitignore.template tmp_templ/.gitignore
+mv $TMP_DIR/.gitignore.template $TMP_DIR/.gitignore # Copy gitingore from template so is doesn't affect template repo
 
-rsync -r tmp_templ/ $TARGET_DIR/
-cp -n tmp_templ/dev-scripts/env.prod.template $TARGET_DIR/dev-scripts/env.prod
+rsync -r $TMP_DIR/ $TARGET_DIR/
+cp -n $TMP_DIR/dev-scripts/env.prod.template $TARGET_DIR/dev-scripts/env.prod
 rm $TARGET_DIR/dev-scripts/env.prod.template
-cp -n tmp_templ/dev-scripts/env.stage.template $TARGET_DIR/dev-scripts/env.stage
+cp -n $TMP_DIR/dev-scripts/env.stage.template $TARGET_DIR/dev-scripts/env.stage
 rm $TARGET_DIR/dev-scripts/env.stage.template
-cp -n tmp_templ/spa/next.config.mjs.template $TARGET_DIR/spa/next.config.mjs
+cp -n $TMP_DIR/spa/next.config.mjs.template $TARGET_DIR/spa/next.config.mjs
 rm $TARGET_DIR/spa/next.config.mjs.template
-rm -rf tmp_templ
+rm -rf $TMP_DIR
 
