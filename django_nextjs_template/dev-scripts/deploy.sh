@@ -16,16 +16,17 @@ function print_error () {
     echo -e "${RED}$1${NC}" >&2
 }
 
+
 function build_image () {
     set -e
     print_status "Building $1"
-    docker build --secret id=sentry_auth,env=SENTRY_AUTH_TOKEN  -t $REGISTRY_HOSTNAME/$PROJECT_NAME-$1 -f $2 $3  --platform linux/amd64
+    docker build --secret id=sentry_auth,env=SENTRY_AUTH_TOKEN  -t $DOCKER_IMAGE_PREFIX-$1 -f $2 $3  --platform linux/amd64
     BUILD_RESULT_STATUS=$?
     if [ ${BUILD_RESULT_STATUS} -ne 0 ]; then
         print_error "$1 Build failed!"
         exit "${BUILD_RESULT_STATUS}"
     fi
-    local RESULT=$(docker inspect --format='{{index .RepoDigests 0}}' $REGISTRY_HOSTNAME/$PROJECT_NAME-$1)
+    local RESULT=$(docker inspect --format='{{index .RepoDigests 0}}' $DOCKER_IMAGE_PREFIX-$1)
     print_status "$1 image hash: $RESULT"
     echo $RESULT
 }
@@ -33,6 +34,7 @@ function build_image () {
 source dev-scripts/env.base
 source $ENV_FILE
 
+DOCKER_IMAGE_PREFIX="$REGISTRY_HOSTNAME/$REGISTRY_NAMESPACE/$PROJECT_NAME"
 DEPLOY_HOSTNAME=$PROJECT_DOMAIN
 
 print_status "Collecting static files for django"
@@ -52,9 +54,9 @@ print_status "Loggin in to $REGISTRY_HOSTNAME"
 echo $REGISTRY_PASSWORD | docker login $REGISTRY_HOSTNAME --username $REGISTRY_USERNAME --password-stdin
 
 print_status "Pushing images to registry"
-docker push $REGISTRY_HOSTNAME/$PROJECT_NAME-django
-docker push $REGISTRY_HOSTNAME/$PROJECT_NAME-nextjs
-docker push $REGISTRY_HOSTNAME/$PROJECT_NAME-nginx
+docker push $DOCKER_IMAGE_PREFIX-django
+docker push $DOCKER_IMAGE_PREFIX-nextjs
+docker push $DOCKER_IMAGE_PREFIX-nginx
 
 print_status "Deploying to $DEPLOY_HOSTNAME"
 ssh root@$DEPLOY_HOSTNAME "mkdir -p /app/$PROJECT_NAME"
