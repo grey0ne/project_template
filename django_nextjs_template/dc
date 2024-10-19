@@ -12,17 +12,17 @@ source $PROJECT_DIR/dev-scripts/env.base
 source $PROJECT_DIR/dev-scripts/env.dev
 
 if [ $1 = "django" ]; then
-  $DEV_COMPOSE run --rm django python manage.py "${@:2}"
+    $DEV_COMPOSE run --rm django python manage.py "${@:2}"
 elif [ $1 = "sh" ]; then
-  $DEV_COMPOSE exec $2 bash
+    $DEV_COMPOSE exec $2 bash
 elif [ $1 = "test" ]; then
-  $DEV_COMPOSE run --rm django pytest
+    $DEV_COMPOSE run --rm django pytest
 elif [ $1 = "format" ]; then
-  $DEV_COMPOSE run --rm django sh -c 'isort . && black .'
+    $DEV_COMPOSE run --rm django sh -c 'isort . && black .'
 elif [ $1 = "tmux" ]; then
-  ./dev-scripts/tmux_dev.sh
+    ./dev-scripts/tmux_dev.sh
 elif [ $1 = "devsuperuser" ]; then
-  $DEV_COMPOSE run --rm django sh -c "export DJANGO_SUPERUSER_PASSWORD='devpass' && python manage.py createsuperuser --noinput --username $2 --email $2@$2.com"
+    $DEV_COMPOSE run --rm django sh -c "export DJANGO_SUPERUSER_PASSWORD='devpass' && python manage.py createsuperuser --noinput --username $2 --email $2@$2.com"
 elif [ $1 = "buildtest" ]; then
     docker build . --file=dev-scripts/Dockerfile.playwright --tag $PROJECT_NAME-playwright
 elif [ $1 = "runtest" ]; then
@@ -55,5 +55,5 @@ elif [ $1 = "updatesubmodules" ]; then
     git submodule init
     git submodule update --remote
 else
-  $DEV_COMPOSE $@
+    $DEV_COMPOSE $@
 fi
