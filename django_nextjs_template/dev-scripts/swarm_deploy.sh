@@ -19,15 +19,17 @@ do
     fi
 done
 
+DOCKER_IMAGE_PREFIX="$REGISTRY_HOSTNAME/$REGISTRY_NAMESPACE/$PROJECT_NAME"
+
 print_status "Login to registry"
 echo $REGISTRY_PASSWORD | docker login $REGISTRY_HOSTNAME --username $REGISTRY_USERNAME --password-stdin
 print_status "Init swarm"
 docker swarm init --advertise-addr $RESULT_ADDR
 cd /app/$PROJECT_NAME
 print_status "Update image for migrations"
-docker pull $REGISTRY_HOSTNAME/$PROJECT_NAME-django
+docker pull $DOCKER_IMAGE_PREFIX-django
 print_status "Perform migrations"
-docker run --rm -i --env-file=env.base --env-file=env $REGISTRY_HOSTNAME/$PROJECT_NAME-django python manage.py migrate
+docker run --rm -i --env-file=env.base --env-file=env $DOCKER_IMAGE_PREFIX-django python manage.py migrate
 print_status "Update swarm"
 docker stack config -c common.yml -c prod.yml | docker stack deploy --with-registry-auth --detach=false -c - $PROJECT_NAME
 print_status "Prune images"
