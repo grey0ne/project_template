@@ -46,7 +46,7 @@ elif [ $1 = "gencerts" ]; then
     sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $DEPLOY_DIR/ssl/$PROJECT_NAME.crt
 elif [ $1 = "initinfra" ]; then
     source $DEPLOY_DIR/env.prod
-    python3 $DEPLOY_DIR/do_init.py
+    python3 $DEPLOY_DIR/do/do_init.py
 elif [ $1 = "initprod" ]; then
     source $DEPLOY_DIR/env.prod
     $DEPLOY_DIR/production_setup.sh $PROJECT_DOMAIN

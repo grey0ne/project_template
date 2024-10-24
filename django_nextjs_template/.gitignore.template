@@ -113,7 +113,6 @@ spa/.next
 .env.local
 .env
 backend/local_settings.py
-deploy/env.dev
 deploy/env.stage
 deploy/env.prod
 deploy/ssl/*.key
