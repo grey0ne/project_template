@@ -1,4 +1,4 @@
-FROM grey0ne/dev-environment:0.6.9
+FROM grey0ne/dev-environment:0.7.1
 
 ENV PYTHONUNBUFFERED=1
 ENV POETRY_VIRTUALENVS_CREATE=false

@@ -92,6 +92,7 @@ S3_SECRET_KEY = config_get("S3_SECRET_KEY")
 S3_ENDPOINT = config_get("S3_ENDPOINT_URL", default='http://minio:9000')
 S3_DOMAIN = config_get("S3_DOMAIN", default=DOMAIN)
 S3_SIGNATURE_VERSION = config_get("S3_SIGNATURE_VERSION", default='v4')
+S3_ACL = config_get("S3_ACL", default='private')
 
 MEDIA_S3_STORAGE: dict[str, Any] = {
     "BACKEND": "application.s3_storage.CustomS3Storage",
@@ -102,10 +103,10 @@ MEDIA_S3_STORAGE: dict[str, Any] = {
         'endpoint_url': S3_ENDPOINT,
         'access_key': S3_ACCESS_KEY_ID,
         'secret_key': S3_SECRET_KEY,
-        'default_acl': 'private',
+        'default_acl': S3_ACL,
         'signature_version': S3_SIGNATURE_VERSION,
         'file_overwrite': False,
-        'querystring_auth': True,
+        'querystring_auth': S3_ACL == 'private',
         'querystring_expire': 60 * 2,  # Links valid for two minutes
         'domain': S3_DOMAIN,
     },
