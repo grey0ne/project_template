@@ -10,8 +10,8 @@ DEV_SUPERUSER_PASSWORD="devpass"
 PROJECT_TEMPLATE_DIR="$HOME/projects/project_template"
 
 source $PROJECT_DIR/.env
-source $PROJECT_DIR/dev-scripts/env.base
-source $PROJECT_DIR/dev-scripts/env.dev
+source $DEPLOY_DIR/env.base
+source $DEPLOY_DIR/env.dev
 
 if [ $1 = "django" ]; then
     $DEV_COMPOSE run --rm django python manage.py "${@:2}"

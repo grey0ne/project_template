@@ -113,11 +113,11 @@ spa/.next
 .env.local
 .env
 backend/local_settings.py
-dev-scripts/env.dev
-dev-scripts/env.stage
-dev-scripts/env.prod
-dev-scripts/ssl/*.key
-dev-scripts/ssl/*.crt
+deploy/env.dev
+deploy/env.stage
+deploy/env.prod
+deploy/ssl/*.key
+deploy/ssl/*.crt
 
 .vscode
 

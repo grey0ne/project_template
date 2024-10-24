@@ -29,10 +29,10 @@ done
 mv $TMP_DIR/.gitignore.template $TMP_DIR/.gitignore # Copy gitingore from template so is doesn't affect template repo
 
 rsync -r $TMP_DIR/ $TARGET_DIR/
-cp -n $TMP_DIR/dev-scripts/env.prod.template $TARGET_DIR/dev-scripts/env.prod
-rm $TARGET_DIR/dev-scripts/env.prod.template
-cp -n $TMP_DIR/dev-scripts/env.stage.template $TARGET_DIR/dev-scripts/env.stage
-rm $TARGET_DIR/dev-scripts/env.stage.template
+cp -n $TMP_DIR/deploy/env.prod.template $TARGET_DIR/deploy/env.prod
+rm $TARGET_DIR/deploy/env.prod.template
+cp -n $TMP_DIR/deploy/env.stage.template $TARGET_DIR/deploy/env.stage
+rm $TARGET_DIR/deploy/env.stage.template
 cp -n $TMP_DIR/spa/next.config.mjs.template $TARGET_DIR/spa/next.config.mjs
 rm $TARGET_DIR/spa/next.config.mjs.template
 rm -rf $TMP_DIR
