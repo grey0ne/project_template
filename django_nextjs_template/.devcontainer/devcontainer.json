@@ -4,7 +4,7 @@
 	"remoteUser": "greyone",
 	"build": {
 		"context": "..",
-		"dockerfile": "../dev-scripts/Dockerfile",
+		"dockerfile": "../deploy/Dockerfile.devcontainer",
 		"args": {"tag":"<project_name>-vscode-dev"}
 	},
 	"runArgs": ["--name", "<project_name>_devcontainer", "--hostname", "<project_name>-dev"],
