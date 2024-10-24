@@ -8,6 +8,10 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+PROJECT_DIR=$(pwd)
+DEPLOY_DIR="$PROJECT_DIR/deploy"
+COMPOSE_DIR="$DEPLOY_DIR/compose"
+
 function print_status () {
     echo -e "${GREEN}$1${NC}" >&2
 }
@@ -31,7 +35,7 @@ function build_image () {
     echo $RESULT
 }
 
-source dev-scripts/env.base
+source $DEPLOY_DIR/env.base
 source $ENV_FILE
 
 DOCKER_IMAGE_PREFIX="$REGISTRY_HOSTNAME/$REGISTRY_NAMESPACE/$PROJECT_NAME"
@@ -61,14 +65,14 @@ docker push $DOCKER_IMAGE_PREFIX-nginx
 print_status "Deploying to $DEPLOY_HOSTNAME"
 ssh root@$DEPLOY_HOSTNAME "mkdir -p /app/$PROJECT_NAME"
 print_status "Copiyng compose files to $DEPLOY_HOSTNAME"
-envsubst '$DJANGO_IMAGE $NGINX_IMAGE $NEXTJS_IMAGE' < docker/prod.yml > docker/prod.yml.tmp
-scp dev-scripts/certbot_renew.sh root@$DEPLOY_HOSTNAME:/etc/cron.daily
-scp docker/common.yml root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME
-scp docker/prod.yml.tmp root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/prod.yml
-rm docker/prod.yml.tmp
+envsubst '$DJANGO_IMAGE $NGINX_IMAGE $NEXTJS_IMAGE' < $COMPOSE_DIR/prod.yml > $COMPOSE_DIR/prod.yml.tmp
+scp $DEPLOY_DIR/prod-scripts/certbot_renew.sh root@$DEPLOY_HOSTNAME:/etc/cron.daily
+scp $COMPOSE_DIR/common.yml root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME
+scp $COMPOSE_DIR/prod.yml.tmp root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/prod.yml
+rm $COMPOSE_DIR/prod.yml.tmp
 print_status "Copiyng env files to $DEPLOY_HOSTNAME"
-scp dev-scripts/env.base root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/env.base
+scp $DEPLOY_DIR/env.base root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/env.base
 scp $ENV_FILE root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/env
 print_status "Copiyng scripts to $DEPLOY_HOSTNAME"
-scp dev-scripts/swarm_deploy.sh dev-scripts/manage_prod.sh root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME
+scp $DEPLOY_DIR/prod-scripts/swarm_deploy.sh $DEPLOY_DIR/prod-scripts/manage_prod.sh root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME
 ssh root@$DEPLOY_HOSTNAME "cd /app/$PROJECT_NAME && ./swarm_deploy.sh"

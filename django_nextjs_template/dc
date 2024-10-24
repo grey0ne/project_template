@@ -3,7 +3,9 @@
 set -e
 
 PROJECT_DIR=$(pwd)
-DEV_COMPOSE="docker compose -f $PROJECT_DIR/docker/common.yml -f $PROJECT_DIR/docker/dev.yml --env-file=$PROJECT_DIR/dev-scripts/env.base --env-file=$PROJECT_DIR/dev-scripts/env.dev"
+DEPLOY_DIR="$PROJECT_DIR/deploy"
+
+DEV_COMPOSE="docker compose -f $DEPLOY_DIR/compose/common.yml -f $DEPLOY_DIR/compose/dev.yml --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.dev"
 DEV_SUPERUSER_PASSWORD="devpass"
 PROJECT_TEMPLATE_DIR="$HOME/projects/project_template"
 
@@ -30,26 +32,26 @@ elif [ $1 = "runtest" ]; then
 elif [ $1 = "generatetypes" ]; then
     $DEV_COMPOSE exec nextjs npx -y openapi-typescript@7.4.1 http://django:8000/api/openapi.json --output api/apiTypes.ts
 elif [ $1 = "deploystage" ]; then
-    $PROJECT_DIR/dev-scripts/deploy.sh $PROJECT_DIR/dev-scripts/env.stage
+    $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.stage
 elif [ $1 = "deployprod" ]; then
-    $PROJECT_DIR/dev-scripts/deploy.sh $PROJECT_DIR/dev-scripts/env.prod
+    $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.prod
 elif [ $1 = "djangoprod" ]; then
-    source $PROJECT_DIR/dev-scripts/env.prod
+    source $DEPLOY_DIR/env.prod
     ssh root@$PROJECT_DOMAIN "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"
 elif [ $1 = "logsprod" ]; then
-    source $PROJECT_DIR/dev-scripts/env.prod
+    source $DEPLOY_DIR/env.prod
     ssh root@$PROJECT_DOMAIN "docker service logs ${PROJECT_NAME}_${2}"
 elif [ $1 = "gencerts" ]; then
-    $PROJECT_DIR/dev-scripts/generate_certs.sh ${PROJECT_NAME} ${PROJECT_DOMAIN}
-    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $PROJECT_DIR/dev-scripts/ssl/$PROJECT_NAME.crt
+    $DEPLOY_DIR/generate_certs.sh ${PROJECT_NAME} ${PROJECT_DOMAIN}
+    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $DEPLOY_DIR/ssl/$PROJECT_NAME.crt
 elif [ $1 = "initinfra" ]; then
-    source $PROJECT_DIR/dev-scripts/env.prod
-    python3 $PROJECT_DIR/dev-scripts/do_init.py
+    source $DEPLOY_DIR/env.prod
+    python3 $DEPLOY_DIR/do_init.py
 elif [ $1 = "initprod" ]; then
-    source $PROJECT_DIR/dev-scripts/env.prod
-    $PROJECT_DIR/dev-scripts/production_setup.sh $PROJECT_DOMAIN
+    source $DEPLOY_DIR/env.prod
+    $DEPLOY_DIR/production_setup.sh $PROJECT_DOMAIN
 elif [ $1 = "updatetemplate" ]; then
-    source $PROJECT_DIR/dev-scripts/env.prod
+    source $DEPLOY_DIR/env.prod
     $PROJECT_TEMPLATE_DIR/update_template.sh -t django_nextjs_template -n $PROJECT_NAME -r $PROJECT_DIR -d $PROJECT_DOMAIN
 elif [ $1 = "updatesubmodules" ]; then
     git submodule init
