@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+set -a
 
 PROJECT_DIR=$(pwd)
 DEPLOY_DIR="$PROJECT_DIR/deploy"

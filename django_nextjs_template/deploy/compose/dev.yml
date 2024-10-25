@@ -8,10 +8,10 @@ services:
     build:
       context: ../backend
     env_file:
-      - ../deploy/env.base
-      - ../deploy/env.dev
+      - ${DEPLOY_DIR}/env.base
+      - ${DEPLOY_DIR}/env.dev
     volumes:
-      - ../backend:/app/src
+      - ${PROJECT_DIR}/backend:/app/src
     depends_on:
       - postgres
 
@@ -19,12 +19,12 @@ services:
     image: ${PROJECT_NAME}-nextjs
     container_name: ${PROJECT_NAME}-nextjs
     build:
-      context: ../spa
+      context: ${PROJECT_DIR}/spa
     env_file:
-      - ../deploy/env.base
-      - ../deploy/env.dev
+      - ${DEPLOY_DIR}/env.base
+      - ${DEPLOY_DIR}/env.dev
     volumes:
-      - ../spa:/app
+      - ${PROJECT_DIR}/spa:/app
 
   minio:
     command: server /data --console-address ":9001"
@@ -43,8 +43,8 @@ services:
     image: "nginx:1.25.3-alpine-slim"
     container_name: ${PROJECT_NAME}-nginx
     volumes:
-      - ../nginx/conf/nginx_dev.conf:/etc/nginx/nginx.conf
-      - ../deploy/ssl:/app/ssl
+      - ${PROJECT_DIR}/nginx/conf/nginx_dev.conf:/etc/nginx/nginx.conf
+      - ${DEPLOY_DIR}/ssl:/app/ssl
     environment:
       DOMAIN: ${PROJECT_DOMAIN}
 
