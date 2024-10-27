@@ -6,7 +6,7 @@ set -a
 PROJECT_DIR=$(pwd)
 DEPLOY_DIR="$PROJECT_DIR/deploy"
 
-DEV_COMPOSE="docker compose -f $DEPLOY_DIR/compose/common.yml -f $DEPLOY_DIR/compose/dev.yml --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.dev"
+DEV_COMPOSE="docker compose -f $DEPLOY_DIR/compose/dev.yml --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.dev"
 DEV_SUPERUSER_PASSWORD="devpass"
 PROJECT_TEMPLATE_DIR="$HOME/projects/project_template"
 

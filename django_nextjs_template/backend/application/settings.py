@@ -18,7 +18,7 @@ DOMAIN = config_get_str('PROJECT_DOMAIN')
 PROJECT_NAME = config_get('PROJECT_NAME')
 
 CSRF_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = [f'https://{DOMAIN}', 'http://{DOMAIN}']
+CSRF_TRUSTED_ORIGINS = [f'https://{DOMAIN}', ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 

@@ -3,6 +3,7 @@ name: ${PROJECT_NAME}
 services:
   django:
     command: python -m uvicorn --reload --lifespan off --host 0.0.0.0 --port 8000 application.asgi:application 
+    domainname: ${PROJECT_NAME}-django
     image: ${PROJECT_NAME}-django
     container_name: ${PROJECT_NAME}-django
     build:
@@ -14,10 +15,14 @@ services:
       - ${PROJECT_DIR}/backend:/app/src
     depends_on:
       - postgres
+    networks:
+      - app
+      - devnet
 
   nextjs:
     image: ${PROJECT_NAME}-nextjs
     container_name: ${PROJECT_NAME}-nextjs
+    domainname: ${PROJECT_NAME}-nextjs
     build:
       context: ${PROJECT_DIR}/spa
     env_file:
@@ -25,11 +30,15 @@ services:
       - ${DEPLOY_DIR}/env.dev
     volumes:
       - ${PROJECT_DIR}/spa:/app
+    networks:
+      - app
+      - devnet
 
   minio:
     command: server /data --console-address ":9001"
     image: "minio/minio:latest"
     container_name: ${PROJECT_NAME}-minio
+    domainname: ${PROJECT_NAME}-minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -38,15 +47,27 @@ services:
       MINIO_ROOT_PASSWORD: minio_${PROJECT_NAME}
     volumes:
       - minio-data:/data
+    networks:
+      - app
+      - devnet
 
   nginx:
-    image: "nginx:1.25.3-alpine-slim"
-    container_name: ${PROJECT_NAME}-nginx
+    image: "nginx:1.27.2-alpine-slim"
+    container_name: dev-nginx
     volumes:
-      - ${PROJECT_DIR}/nginx/conf/nginx_dev.conf:/etc/nginx/nginx.conf
-      - ${DEPLOY_DIR}/ssl:/app/ssl
-    environment:
-      DOMAIN: ${PROJECT_DOMAIN}
+      - ${DEPLOY_DIR}/nginx/conf/nginx_dev.template:/etc/nginx/templates/${PROJECT_NAME}.conf.template
+      - ${SSL_CERTS_DIR}:/app/ssl
+    env_file:
+      - ${DEPLOY_DIR}/env.base
+      - ${DEPLOY_DIR}/env.dev
+    depends_on:
+      - django
+      - nextjs
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - devnet
 
   postgres:
     image: "postgres:16.1-alpine"
@@ -57,6 +78,8 @@ services:
       POSTGRES_DB: ${PROJECT_NAME}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app
 
 volumes:
   postgres-data:
@@ -65,3 +88,11 @@ volumes:
   minio-data:
     driver: local
     name: ${PROJECT_NAME}-minio-data
+
+
+networks:
+  app:
+    name: ${PROJECT_NAME}
+  devnet:
+    name: devnet
+    external: true

@@ -12,8 +12,15 @@ services:
     volumes:
       - certbot-certificates:/etc/letsencrypt
       - certbot-challenge:/var/www/certbot
-    environment:
-      DOMAIN: ${PROJECT_DOMAIN}
+    depends_on:
+      - django
+      - nextjs
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - env.base
+      - env
 
   nextjs:
     image: ${NEXTJS_IMAGE}
@@ -28,3 +35,8 @@ volumes:
   certbot-challenge:
     driver: local
     name: certbot-challenge
+
+
+networks:
+  default:
+    name: ${PROJECT_NAME}    
