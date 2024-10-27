@@ -39,9 +39,6 @@ services:
     image: "minio/minio:latest"
     container_name: ${PROJECT_NAME}-minio
     domainname: ${PROJECT_NAME}-minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minio_${PROJECT_NAME}
       MINIO_ROOT_PASSWORD: minio_${PROJECT_NAME}
@@ -49,24 +46,6 @@ services:
       - minio-data:/data
     networks:
       - app
-      - devnet
-
-  nginx:
-    image: "nginx:1.27.2-alpine-slim"
-    container_name: dev-nginx
-    volumes:
-      - ${NGINX_CONFIG_DIR}:/etc/nginx/conf.d
-      - ${SSL_CERTS_DIR}:/app/ssl
-    env_file:
-      - ${DEPLOY_DIR}/env.base
-      - ${DEPLOY_DIR}/env.dev
-    depends_on:
-      - django
-      - nextjs
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
       - devnet
 
   postgres:

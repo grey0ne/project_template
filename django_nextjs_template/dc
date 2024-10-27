@@ -39,6 +39,8 @@ elif [ $1 = "deployprod" ]; then
 elif [ $1 = "updatenginx" ]; then
     mkdir -p ${NGINX_CONFIG_DIR}
     envsubst '$PROJECT_NAME,$PROJECT_DOMAIN' < $DEPLOY_DIR/nginx/conf/nginx_dev.template > $NGINX_CONFIG_DIR/$PROJECT_NAME.conf
+elif [ $1 = "nginx" ]; then
+    docker compose -f $DEPLOY_DIR/compose/balancer.yml "${@:2}"
 elif [ $1 = "djangoprod" ]; then
     source $DEPLOY_DIR/env.prod
     ssh root@$PROJECT_DOMAIN "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"
