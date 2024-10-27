@@ -10,9 +10,9 @@ DEV_COMPOSE="docker compose -f $DEPLOY_DIR/compose/dev.yml --env-file=$DEPLOY_DI
 DEV_SUPERUSER_PASSWORD="devpass"
 PROJECT_TEMPLATE_DIR="$HOME/projects/project_template"
 
-source $PROJECT_DIR/.env
 source $DEPLOY_DIR/env.base
 source $DEPLOY_DIR/env.dev
+source $PROJECT_DIR/.env
 
 if [ $1 = "django" ]; then
     $DEV_COMPOSE run --rm django python manage.py "${@:2}"
@@ -36,6 +36,9 @@ elif [ $1 = "deploystage" ]; then
     $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.stage
 elif [ $1 = "deployprod" ]; then
     $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.prod
+elif [ $1 = "updatenginx" ]; then
+    mkdir -p ${NGINX_CONFIG_DIR}
+    envsubst '$PROJECT_NAME,$PROJECT_DOMAIN' < $DEPLOY_DIR/nginx/conf/nginx_dev.template > $NGINX_CONFIG_DIR/$PROJECT_NAME.conf
 elif [ $1 = "djangoprod" ]; then
     source $DEPLOY_DIR/env.prod
     ssh root@$PROJECT_DOMAIN "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"
@@ -44,7 +47,7 @@ elif [ $1 = "logsprod" ]; then
     ssh root@$PROJECT_DOMAIN "docker service logs ${PROJECT_NAME}_${2}"
 elif [ $1 = "gencerts" ]; then
     $DEPLOY_DIR/generate_certs.sh ${PROJECT_NAME} ${PROJECT_DOMAIN}
-    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $DEPLOY_DIR/ssl/$PROJECT_NAME.crt
+    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $SSL_CERTS_DIR/$PROJECT_NAME.crt
 elif [ $1 = "initinfra" ]; then
     source $DEPLOY_DIR/env.prod
     python3 $DEPLOY_DIR/do/do_init.py

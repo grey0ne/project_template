@@ -1,17 +1,3 @@
-log_format shortlog '[$time_local] $status $request';
-
-upstream ${PROJECT_NAME}-django {
-    server ${PROJECT_NAME}-django:8000;
-}
-
-upstream ${PROJECT_NAME}-nextjs {
-    server ${PROJECT_NAME}-nextjs:3000;
-}
-
-upstream ${PROJECT_NAME}-minio {
-    server ${PROJECT_NAME}-minio:9000;
-}
-
 server {
     listen 80;
     server_name ${PROJECT_DOMAIN};
@@ -28,7 +14,7 @@ server {
 server {
     listen 443 ssl;
     listen 80;
-    access_log /dev/stdout shortlog;
+    access_log /dev/stdout;
 
     server_name ${PROJECT_DOMAIN};
 
@@ -42,15 +28,20 @@ server {
     gzip_proxied any;
     gzip_types text/css application/x-javascript;
 
+
+    resolver 127.0.0.1 valid=30s;
+
     location ~ ^/(admin|api|login|complete|static|s)/ {
-        proxy_pass http://${PROJECT_NAME}-django;
+        set $django ${PROJECT_NAME}-django;
+        proxy_pass http://$django:8000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-Proto 'https';
     }
     location ~ ^/(gryone-static|gryone-media)/ {
-        proxy_pass http://${PROJECT_NAME}-minio;
+        set $minio ${PROJECT_NAME}-minio;
+        proxy_pass http://$minio:9000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;
@@ -59,7 +50,8 @@ server {
 
 
     location / {
-        proxy_pass http://${PROJECT_NAME}-nextjs;
+        set $nextjs ${PROJECT_NAME}-nextjs;
+        proxy_pass http://$nextjs:3000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;

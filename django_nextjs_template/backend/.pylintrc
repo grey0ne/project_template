@@ -15,6 +15,5 @@ max-args=8
 [VARIABLES]
 ignored-argument-names=args|kwargs|request
 
-
 load-plugins=pylint_django
 django-settings-module=application.settings
