@@ -31,8 +31,8 @@ server {
     resolver 127.0.0.11 valid=30s;
 
     location ~ ^/(admin|api|login|complete|static|s)/ {
-        set $django ${PROJECT_NAME}-django;
-        proxy_pass http://$django:8000;
+        set $django${PROJECT_NAME} ${PROJECT_NAME}-django;
+        proxy_pass http://$django${PROJECT_NAME}:8000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;
@@ -40,8 +40,8 @@ server {
     }
 
     location ~ ^/(${PROJECT_NAME}-static|${PROJECT_NAME}-media)/ {
-        set $minio ${PROJECT_NAME}-minio;
-        proxy_pass http://$minio:9000;
+        set $minio${PROJECT_NAME} ${PROJECT_NAME}-minio;
+        proxy_pass http://$minio${PROJECT_NAME}:9000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;
@@ -49,8 +49,8 @@ server {
     }
 
     location ~ ^/(minio-admin)/ {
-        set $minio ${PROJECT_NAME}-minio;
-        proxy_pass http://$minio:9001;
+        set $minio${PROJECT_NAME} ${PROJECT_NAME}-minio;
+        proxy_pass http://$minio${PROJECT_NAME}:9001;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;
@@ -58,8 +58,8 @@ server {
     }
 
     location / {
-        set $nextjs ${PROJECT_NAME}-nextjs;
-        proxy_pass http://$nextjs:3000;
+        set $nextjs${PROJECT_NAME} ${PROJECT_NAME}-nextjs;
+        proxy_pass http://$nextjs${PROJECT_NAME}:3000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;

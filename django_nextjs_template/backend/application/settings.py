@@ -25,7 +25,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 DEBUG = bool(config_get('DJANGO_DEBUG', default=False))
 
 ALLOWED_HOSTS: list[str] = [
-    'django',
+    f'{PROJECT_NAME}-django',
     DOMAIN,
 ]
 
