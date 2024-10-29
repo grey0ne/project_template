@@ -35,9 +35,6 @@ function build_image () {
     echo $RESULT
 }
 
-source $DEPLOY_DIR/env.base
-source $ENV_FILE
-
 DOCKER_IMAGE_PREFIX="$REGISTRY_HOSTNAME/$REGISTRY_NAMESPACE/$PROJECT_NAME"
 DEPLOY_HOSTNAME=$PROJECT_DOMAIN
 
@@ -65,7 +62,7 @@ docker push $DOCKER_IMAGE_PREFIX-nginx
 print_status "Deploying to $DEPLOY_HOSTNAME"
 ssh root@$DEPLOY_HOSTNAME "mkdir -p /app/$PROJECT_NAME"
 print_status "Copiyng compose files to $DEPLOY_HOSTNAME"
-envsubst '$DJANGO_IMAGE $NGINX_IMAGE $NEXTJS_IMAGE $PROJECT_NAME' < $COMPOSE_DIR/prod.yml.template > $COMPOSE_DIR/prod.yml
+envsubst < $COMPOSE_DIR/prod.yml.template > $COMPOSE_DIR/prod.yml
 scp $DEPLOY_DIR/prod-scripts/certbot_renew.sh root@$DEPLOY_HOSTNAME:/etc/cron.daily
 scp $COMPOSE_DIR/prod.yml root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/prod.yml
 rm $COMPOSE_DIR/prod.yml

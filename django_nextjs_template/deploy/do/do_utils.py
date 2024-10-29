@@ -88,13 +88,17 @@ class DOException(Exception):
 
 
 def save_env_option(option_name: str, value: str):
+    option_found = False
     with fileinput.input(files=(PROD_ENV_FILE, ), encoding="utf-8", inplace=True) as f:
         for line in f:
             if f'{option_name}=' in line:
                 result = f'{option_name}={value}\n'
+                option_found=True
             else:
                 result = line
             print(result, end='')
+        if not option_found:
+            raise Exception('Option not found')
 
 
 def do_get_request(url: str) -> dict[str, Any]:

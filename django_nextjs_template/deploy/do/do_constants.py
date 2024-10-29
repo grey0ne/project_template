@@ -29,5 +29,5 @@ DO_HEADERS = {
     "Content-Type": "application/json"
 }
 
-SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROD_ENV_FILE = os.path.join(SCRIPTS_DIR, 'env.prod')

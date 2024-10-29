@@ -23,8 +23,12 @@ DOCKER_IMAGE_PREFIX="$REGISTRY_HOSTNAME/$REGISTRY_NAMESPACE/$PROJECT_NAME"
 
 print_status "Login to registry"
 echo $REGISTRY_PASSWORD | docker login $REGISTRY_HOSTNAME --username $REGISTRY_USERNAME --password-stdin
-print_status "Init swarm"
-docker swarm init --advertise-addr $RESULT_ADDR
+if [ "$(docker info --format '{{.Swarm.LocalNodeState}}')" = "active" ]; then
+    print_status "Swarm already initialized"
+else
+    print_status "Initializing swarm"
+    docker swarm init --advertise-addr $RESULT_ADDR
+fi
 cd /app/$PROJECT_NAME
 print_status "Update image for migrations"
 docker pull $DOCKER_IMAGE_PREFIX-django

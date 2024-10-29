@@ -2,7 +2,7 @@
 services:
   ${PROJECT_NAME}-django:
     image: ${DJANGO_IMAGE}
-    command: gunicorn -w 4 -b 0.0.0.0:8000 -k application.worker.CustomUvicornWorker application.asgi
+    command: gunicorn -w ${DJANGO_WORKER_COUNT} -b 0.0.0.0:8000 -k application.worker.CustomUvicornWorker application.asgi
     env_file:
       - env.base
       - env

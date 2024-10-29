@@ -12,10 +12,11 @@ django_stubs_ext.monkeypatch()
 SOURCE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_DIR = os.path.dirname(SOURCE_DIR)
 
-SECRET_KEY = config_get('DJANGO_SECRET_KEY')
+SECRET_KEY = config_get_str('DJANGO_SECRET_KEY')
 
 DOMAIN = config_get_str('PROJECT_DOMAIN')
-PROJECT_NAME = config_get('PROJECT_NAME')
+PROJECT_NAME = config_get_str('PROJECT_NAME')
+PROJECT_VERSION = config_get_str('PROJECT_VERSION', '0')
 
 CSRF_COOKIE_HTTPONLY = False
 CSRF_TRUSTED_ORIGINS = [f'https://{DOMAIN}', ]
@@ -124,9 +125,7 @@ STORAGES: dict[str, Any] = {
 
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
@@ -144,27 +143,16 @@ USE_L10N = True
 
 USE_TZ = True
 
-# EMAIL SETTINGS #
-
-EMAIL_HOST = config_get('EMAIL_HOST', default=None)
-EMAIL_HOST_PASSWORD = config_get('EMAIL_PASSWORD', default=None)
-EMAIL_HOST_USER = config_get('EMAIL_USER', default=None)
-SERVER_EMAIL = config_get('EMAIL_USER', default=None)
-EMAIL_PORT = config_get('EMAIL_PORT', default=None)
-EMAIL_USE_SSL = True
-EMAIL_SUBJECT_PREFIX = f'[{PROJECT_NAME}] '
-
-# END EMAIL SETTINGS #
-
 SENTRY_DSN = config_get('SENTRY_DSN', default=None)
 if SENTRY_DSN is not None:
     sentry_sdk.init(
         dsn=str(config_get('SENTRY_DSN', default=None)),
         integrations=[DjangoIntegration()],
         send_default_pii=True,
+        release=PROJECT_VERSION
     )
 
-from application.project_settings import *  # noqa used to customize templated settings
+from application.project_settings import *  # type: ignore used to customize templated settings
 
 SESSION_COOKIE_SECURE = not DEBUG
 

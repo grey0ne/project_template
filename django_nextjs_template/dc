@@ -42,8 +42,11 @@ elif [ $1 = "s3backupdev" ]; then
 elif [ $1 = "s3backupprod" ]; then
     docker run -it --rm -v ${PROJECT_DIR}/backend:/app/src -v ${PROJECT_DIR}/s3_backup:/tmp/s3_backup --env-file $DEPLOY_DIR/env.base --env-file $DEPLOY_DIR/env.prod $PROJECT_NAME-django python s3_backup.py
 elif [ $1 = "deploystage" ]; then
+    source $DEPLOY_DIR/env.stage
     $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.stage
 elif [ $1 = "deployprod" ]; then
+    source $DEPLOY_DIR/env.prod
+    python3 $DEPLOY_DIR/do/release.py
     $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.prod
 elif [ $1 = "updatenginx" ]; then
     mkdir -p ${NGINX_CONFIG_DIR}
