@@ -1,19 +1,18 @@
 import os
 from typing import Any
-import boto3 # type: ignore
+import boto3
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'application.settings')
 from django.conf import settings
 
 S3_BACKUP_PATH = '/tmp/s3_backup'
 
-
 def download_dir(client: Any, dir: str, local_dir: str, bucket: str):
+    print(f'Downloading Directory "{dir}" from bucket "{bucket}"')
     paginator = client.get_paginator('list_objects')
     for result in paginator.paginate(Bucket=bucket, Delimiter='/', Prefix=dir):
         if result.get('CommonPrefixes') is not None:
             for subdir in result.get('CommonPrefixes'):
-                print(f'Downloading {subdir.get("Prefix")}')
                 download_dir(client, subdir.get('Prefix'), local_dir, bucket)
         for file in result.get('Contents', []):
             dest_pathname = os.path.join(local_dir, file.get('Key'))
@@ -24,6 +23,10 @@ def download_dir(client: Any, dir: str, local_dir: str, bucket: str):
 
 
 def backup_s3():
+    print('Initiating S3 Backup')
+    print(f'S3 Endpoint {settings.S3_ENDPOINT}')
+    print(f'S3 Bucket {settings.S3_BUCKET}') 
+    print(f'S3 Key ID {settings.S3_ACCESS_KEY_ID}')
     client = boto3.client( # type: ignore
         service_name='s3',
         endpoint_url=settings.S3_ENDPOINT,

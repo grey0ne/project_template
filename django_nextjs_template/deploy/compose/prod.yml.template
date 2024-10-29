@@ -1,6 +1,6 @@
 
 services:
-  django:
+  ${PROJECT_NAME}-django:
     image: ${DJANGO_IMAGE}
     command: gunicorn -w 4 -b 0.0.0.0:8000 -k application.worker.CustomUvicornWorker application.asgi
     env_file:
@@ -22,7 +22,7 @@ services:
       - env.base
       - env
 
-  nextjs:
+  ${PROJECT_NAME}-nextjs:
     image: ${NEXTJS_IMAGE}
     env_file:
       - env.base

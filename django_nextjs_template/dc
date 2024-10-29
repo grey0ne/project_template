@@ -7,6 +7,8 @@ PROJECT_DIR=$(pwd)
 DEPLOY_DIR="$PROJECT_DIR/deploy"
 
 DEV_COMPOSE="docker compose -f $DEPLOY_DIR/compose/dev.yml --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.dev"
+BALANCER_COMPOSE="docker compose -f $DEPLOY_DIR/compose/balancer.yml"
+
 DEV_SUPERUSER_PASSWORD="devpass"
 PROJECT_TEMPLATE_DIR="$HOME/projects/project_template"
 
@@ -16,6 +18,9 @@ source $PROJECT_DIR/.env
 
 if [ $1 = "django" ]; then
     $DEV_COMPOSE run --rm django python manage.py "${@:2}"
+elif [ $1 = "up" ]; then
+    $BALANCER_COMPOSE up -d
+    $DEV_COMPOSE up -d
 elif [ $1 = "sh" ]; then
     $DEV_COMPOSE exec $2 bash
 elif [ $1 = "test" ]; then
@@ -32,8 +37,10 @@ elif [ $1 = "runtest" ]; then
     docker run -it --rm --hostname=$PROJECT_NAME-tests --name=$PROJECT_NAME-tests -v .:/app/src --ipc=host --network=$PROJECT_NAME $PROJECT_NAME-playwright npx playwright test
 elif [ $1 = "generatetypes" ]; then
     $DEV_COMPOSE exec nextjs npx -y openapi-typescript@7.4.1 http://${PROJECT_NAME}-django:8000/api/openapi.json --output api/apiTypes.ts
-elif [ $1 = "s3backup" ]; then
-    $DEV_COMPOSE run -v ${PROJECT_DIR}/s3_backup:/tmp/s3_backup --rm django sh -c "python s3_backup.py"
+elif [ $1 = "s3backupdev" ]; then
+    docker run -it --rm -v ${PROJECT_DIR}/backend:/app/src -v ${PROJECT_DIR}/s3_backup:/tmp/s3_backup --env-file $DEPLOY_DIR/env.base --env-file $DEPLOY_DIR/env.dev --network=$PROJECT_NAME $PROJECT_NAME-django python s3_backup.py
+elif [ $1 = "s3backupprod" ]; then
+    docker run -it --rm -v ${PROJECT_DIR}/backend:/app/src -v ${PROJECT_DIR}/s3_backup:/tmp/s3_backup --env-file $DEPLOY_DIR/env.base --env-file $DEPLOY_DIR/env.prod $PROJECT_NAME-django python s3_backup.py
 elif [ $1 = "deploystage" ]; then
     $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.stage
 elif [ $1 = "deployprod" ]; then
@@ -42,7 +49,7 @@ elif [ $1 = "updatenginx" ]; then
     mkdir -p ${NGINX_CONFIG_DIR}
     envsubst '$PROJECT_NAME,$PROJECT_DOMAIN' < $DEPLOY_DIR/nginx/conf/nginx_dev.template > $NGINX_CONFIG_DIR/$PROJECT_NAME.conf
 elif [ $1 = "nginx" ]; then
-    docker compose -f $DEPLOY_DIR/compose/balancer.yml "${@:2}"
+    $BALANCER_COMPOSE "${@:2}"
 elif [ $1 = "djangoprod" ]; then
     source $DEPLOY_DIR/env.prod
     ssh root@$PROJECT_DOMAIN "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"

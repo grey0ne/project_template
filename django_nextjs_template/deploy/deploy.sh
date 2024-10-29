@@ -45,7 +45,7 @@ print_status "Collecting static files for django"
 docker run --rm -i --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.dev -e BUILD_STATIC=true -v ./backend:/app/src $PROJECT_NAME-django python manage.py collectstatic --noinput
 print_status "Building images"
 export DOCKER_CLI_HINTS="false"
-export NGINX_IMAGE=$(build_image "nginx" "nginx/Dockerfile" ".")
+export NGINX_IMAGE=$(build_image "nginx" "deploy/nginx/Dockerfile" ".")
 rm -rf backend/static
 export DJANGO_IMAGE=$(build_image "django" "backend/Dockerfile.prod" "backend")
 cd spa
@@ -65,11 +65,10 @@ docker push $DOCKER_IMAGE_PREFIX-nginx
 print_status "Deploying to $DEPLOY_HOSTNAME"
 ssh root@$DEPLOY_HOSTNAME "mkdir -p /app/$PROJECT_NAME"
 print_status "Copiyng compose files to $DEPLOY_HOSTNAME"
-envsubst '$DJANGO_IMAGE $NGINX_IMAGE $NEXTJS_IMAGE' < $COMPOSE_DIR/prod.yml > $COMPOSE_DIR/prod.yml.tmp
+envsubst '$DJANGO_IMAGE $NGINX_IMAGE $NEXTJS_IMAGE $PROJECT_NAME' < $COMPOSE_DIR/prod.yml.template > $COMPOSE_DIR/prod.yml
 scp $DEPLOY_DIR/prod-scripts/certbot_renew.sh root@$DEPLOY_HOSTNAME:/etc/cron.daily
-scp $COMPOSE_DIR/common.yml root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME
-scp $COMPOSE_DIR/prod.yml.tmp root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/prod.yml
-rm $COMPOSE_DIR/prod.yml.tmp
+scp $COMPOSE_DIR/prod.yml root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/prod.yml
+rm $COMPOSE_DIR/prod.yml
 print_status "Copiyng env files to $DEPLOY_HOSTNAME"
 scp $DEPLOY_DIR/env.base root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/env.base
 scp $ENV_FILE root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/env

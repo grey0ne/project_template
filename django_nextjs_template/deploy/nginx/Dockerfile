@@ -1,4 +1,4 @@
 FROM nginx:1.26-alpine-slim
 
-COPY ./deploy/nginx/conf/nginx_prod.conf /etc/nginx/nginx.conf
+COPY ./deploy/nginx/conf/nginx_prod.template /etc/nginx/templates/default.conf.template
 COPY ./backend/static /usr/share/nginx/static

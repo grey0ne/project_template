@@ -31,7 +31,7 @@ docker pull $DOCKER_IMAGE_PREFIX-django
 print_status "Perform migrations"
 docker run --rm -i --env-file=env.base --env-file=env $DOCKER_IMAGE_PREFIX-django python manage.py migrate
 print_status "Update swarm"
-docker stack config -c common.yml -c prod.yml | docker stack deploy --with-registry-auth --detach=false -c - $PROJECT_NAME
+docker stack config -c prod.yml | docker stack deploy --with-registry-auth --detach=false -c - $PROJECT_NAME
 print_status "Prune images"
 docker image prune -f
 print_status "Deploy completed"

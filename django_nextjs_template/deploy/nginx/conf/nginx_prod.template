@@ -1,0 +1,63 @@
+log_format shortlog '[$time_local] $status $request';
+
+upstream django {
+    server ${PROJECT_NAME}-django:8000;
+}
+
+upstream nextjs {
+    server ${PROJECT_NAME}-nextjs:3000;
+}
+
+server {
+    listen 80;
+    server_name ${PROJECT_DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    access_log /dev/stdout shortlog;
+
+    server_name ${PROJECT_DOMAIN};
+
+    ssl_certificate /etc/letsencrypt/live/${PROJECT_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${PROJECT_DOMAIN}/privkey.pem;
+
+    client_max_body_size 5000k;
+
+    gzip on;
+    gzip_min_length 1000;
+    gzip_proxied any;
+    gzip_types text/css application/x-javascript;
+
+    location /static/ {
+        root /usr/share/nginx;
+    }
+
+    location ~ ^/(admin|api|login|complete|s)/ {
+        proxy_pass http://django;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Proto 'https';
+    }
+
+
+    location / {
+        proxy_pass http://nextjs;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Proto 'https';
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
