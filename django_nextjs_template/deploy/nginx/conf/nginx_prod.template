@@ -1,13 +1,5 @@
 log_format shortlog '[$time_local] $status $request';
 
-upstream django {
-    server ${PROJECT_NAME}-django:8000;
-}
-
-upstream nextjs {
-    server ${PROJECT_NAME}-nextjs:3000;
-}
-
 server {
     listen 80;
     server_name ${PROJECT_DOMAIN};
@@ -40,9 +32,12 @@ server {
     location /static/ {
         root /usr/share/nginx;
     }
+    
+    resolver 127.0.0.11 valid=30s;
 
     location ~ ^/(admin|api|login|complete|s)/ {
-        proxy_pass http://django;
+        set $django${PROJECT_NAME} ${PROJECT_NAME}-django;
+        proxy_pass http://$django${PROJECT_NAME}:8000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;
@@ -51,7 +46,8 @@ server {
 
 
     location / {
-        proxy_pass http://nextjs;
+        set $nextjs${PROJECT_NAME} ${PROJECT_NAME}-nextjs;
+        proxy_pass http://$nextjs${PROJECT_NAME}:3000;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;
