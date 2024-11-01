@@ -6,6 +6,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from application.settings_helper import config_get, config_get_str
 from typing import Any
+from copy import deepcopy
 
 django_stubs_ext.monkeypatch()
 
@@ -91,17 +92,19 @@ DATABASES: dict[str, Any] = {
 S3_ACCESS_KEY_ID = config_get("S3_ACCESS_KEY_ID")
 S3_SECRET_KEY = config_get("S3_SECRET_KEY")
 S3_ENDPOINT = config_get("S3_ENDPOINT_URL", default=f'http://{PROJECT_NAME}-minio:9000')
-S3_DOMAIN = config_get("S3_DOMAIN", default=DOMAIN)
+S3_MEDIA_DOMAIN = config_get("S3_MEDIA_DOMAIN", default=f'media.{DOMAIN}')
+S3_STATIC_DOMAIN = config_get("S3_STATIC_DOMAIN", default=f'static.{DOMAIN}')
 S3_SIGNATURE_VERSION = config_get("S3_SIGNATURE_VERSION", default='v4')
 S3_ACL = config_get("S3_ACL", default='private')
-S3_BUCKET = config_get("S3_BUCKET_NAME", default=f'{PROJECT_NAME}-media')
+S3_MEDIA_BUCKET = config_get("S3_MEDIA_BUCKET", default=f'{PROJECT_NAME}-media')
+S3_STATIC_BUCKET = config_get("S3_STATIC_BUCKET", default=f'{PROJECT_NAME}-static')
 
-STATIC_URL = '/static/' if DEBUG else f'https://{S3_DOMAIN}/{S3_BUCKET}/'
+STATIC_URL = '/static/' if DEBUG else f'https://{S3_STATIC_DOMAIN}/{S3_STATIC_BUCKET}/'
 
 MEDIA_S3_STORAGE: dict[str, Any] = {
     "BACKEND": "application.s3_storage.CustomS3Storage",
     "OPTIONS": {
-        'bucket_name': S3_BUCKET,
+        'bucket_name': S3_MEDIA_BUCKET,
         'endpoint_url': S3_ENDPOINT,
         'access_key': S3_ACCESS_KEY_ID,
         'secret_key': S3_SECRET_KEY,
@@ -110,13 +113,18 @@ MEDIA_S3_STORAGE: dict[str, Any] = {
         'file_overwrite': False,
         'querystring_auth': S3_ACL == 'private',
         'querystring_expire': 60 * 2,  # Links valid for two minutes
-        'domain': S3_DOMAIN,
+        'domain': S3_MEDIA_DOMAIN,
     },
 }
 
+STATIC_S3_STORAGE: dict[str, Any] = deepcopy(MEDIA_S3_STORAGE)
+STATIC_S3_STORAGE['OPTIONS']['default_acl'] = 'public-read'
+STATIC_S3_STORAGE['OPTIONS']['querystring_auth'] = False
+STATIC_S3_STORAGE['OPTIONS']['domain'] = S3_STATIC_DOMAIN
+
 STORAGES: dict[str, Any] = {
     "default": MEDIA_S3_STORAGE,
-    "staticfiles": MEDIA_S3_STORAGE
+    "staticfiles": STATIC_S3_STORAGE
 }
 
 AUTH_PASSWORD_VALIDATORS = [

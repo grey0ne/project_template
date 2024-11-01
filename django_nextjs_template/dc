@@ -61,7 +61,11 @@ elif [ $1 = "logsprod" ]; then
     ssh root@$PROJECT_DOMAIN "docker service logs ${PROJECT_NAME}_${2}"
 elif [ $1 = "gencerts" ]; then
     $DEPLOY_DIR/generate_certs.sh ${PROJECT_NAME} ${PROJECT_DOMAIN}
+    $DEPLOY_DIR/generate_certs.sh media_${PROJECT_NAME} media.${PROJECT_DOMAIN}
     sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $SSL_CERTS_DIR/$PROJECT_NAME.crt
+    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain $SSL_CERTS_DIR/media_$PROJECT_NAME.crt
+    $DEPLOY_DIR/update_hosts.sh addhost $PROJECT_DOMAIN
+    $DEPLOY_DIR/update_hosts.sh addhost media.$PROJECT_DOMAIN
 elif [ $1 = "initinfra" ]; then
     source $DEPLOY_DIR/env.prod
     python3 $DEPLOY_DIR/do/do_init.py
