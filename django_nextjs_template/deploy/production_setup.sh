@@ -11,5 +11,5 @@ else
     # Register domains in certbot
     echo "Setting up certbot for $DOMAIN"
     ssh root@$DOMAIN "export CERT_DOMAIN=$DOMAIN && bash -s" < deploy/prod-scripts/init_certbot.sh
-    scp deploy/certbot_renew.sh root@$DOMAIN:/etc/cron.daily
+    scp deploy/prod-scripts/certbot_renew.sh root@$DOMAIN:/etc/cron.daily
 fi

@@ -117,7 +117,7 @@ deploy/env.stage
 deploy/env.prod
 deploy/ssl/*.key
 deploy/ssl/*.crt
-s3_backup
+backup
 
 .vscode
 

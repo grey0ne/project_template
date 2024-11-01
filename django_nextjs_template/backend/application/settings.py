@@ -102,25 +102,27 @@ S3_STATIC_BUCKET = config_get("S3_STATIC_BUCKET", default=f'{PROJECT_NAME}-stati
 STATIC_URL = '/static/' if DEBUG else f'https://{S3_STATIC_DOMAIN}/{S3_STATIC_BUCKET}/'
 
 MEDIA_S3_STORAGE: dict[str, Any] = {
-    "BACKEND": "application.s3_storage.CustomS3Storage",
+    "BACKEND": "storages.backends.s3.S3Storage",
     "OPTIONS": {
         'bucket_name': S3_MEDIA_BUCKET,
         'endpoint_url': S3_ENDPOINT,
         'access_key': S3_ACCESS_KEY_ID,
         'secret_key': S3_SECRET_KEY,
         'default_acl': S3_ACL,
+        'location': S3_MEDIA_BUCKET if DEBUG else '',
         'signature_version': S3_SIGNATURE_VERSION,
-        'file_overwrite': False,
+        'file_overwrite': True,
         'querystring_auth': S3_ACL == 'private',
         'querystring_expire': 60 * 2,  # Links valid for two minutes
-        'domain': S3_MEDIA_DOMAIN,
+        'custom_domain': S3_MEDIA_DOMAIN,
     },
 }
 
 STATIC_S3_STORAGE: dict[str, Any] = deepcopy(MEDIA_S3_STORAGE)
 STATIC_S3_STORAGE['OPTIONS']['default_acl'] = 'public-read'
 STATIC_S3_STORAGE['OPTIONS']['querystring_auth'] = False
-STATIC_S3_STORAGE['OPTIONS']['domain'] = S3_STATIC_DOMAIN
+STATIC_S3_STORAGE['OPTIONS']['custom_domain'] = S3_STATIC_DOMAIN
+STATIC_S3_STORAGE['OPTIONS']['bucket_name'] = S3_STATIC_BUCKET
 
 LOCAL_STATIC_STORAGE: dict[str, Any] = { "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage" }
 
