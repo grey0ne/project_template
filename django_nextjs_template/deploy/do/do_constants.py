@@ -31,3 +31,4 @@ DO_HEADERS = {
 
 SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROD_ENV_FILE = os.path.join(SCRIPTS_DIR, 'env.prod')
+BASE_ENV_FILE = os.path.join(SCRIPTS_DIR, 'env.base')

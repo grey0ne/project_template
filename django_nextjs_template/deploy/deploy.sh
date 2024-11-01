@@ -63,12 +63,12 @@ print_status "Deploying to $DEPLOY_HOSTNAME"
 ssh root@$DEPLOY_HOSTNAME "mkdir -p /app/$PROJECT_NAME"
 print_status "Copiyng compose files to $DEPLOY_HOSTNAME"
 envsubst < $COMPOSE_DIR/prod.yml.template > $COMPOSE_DIR/prod.yml
-scp $DEPLOY_DIR/prod-scripts/certbot_renew.sh root@$DEPLOY_HOSTNAME:/etc/cron.daily
 scp $COMPOSE_DIR/prod.yml root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/prod.yml
 rm $COMPOSE_DIR/prod.yml
+scp $DEPLOY_DIR/prod-scripts/certbot_renew.sh root@$DEPLOY_HOSTNAME:/etc/cron.daily
 print_status "Copiyng env files to $DEPLOY_HOSTNAME"
 scp $DEPLOY_DIR/env.base root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/env.base
 scp $ENV_FILE root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME/env
 print_status "Copiyng scripts to $DEPLOY_HOSTNAME"
-scp $DEPLOY_DIR/prod-scripts/swarm_deploy.sh $DEPLOY_DIR/prod-scripts/manage_prod.sh root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME
+scp $DEPLOY_DIR/prod-scripts/swarm_deploy.sh root@$DEPLOY_HOSTNAME:/app/$PROJECT_NAME
 ssh root@$DEPLOY_HOSTNAME "cd /app/$PROJECT_NAME && ./swarm_deploy.sh"

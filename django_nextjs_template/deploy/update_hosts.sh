@@ -6,10 +6,8 @@ ETC_HOSTS=/etc/hosts
 # DEFAULT IP FOR HOSTNAME
 IP="127.0.0.1"
 
-# Hostname to add/remove.
-HOSTNAME=$1
-
 function removehost() {
+    HOSTNAME=$1
     if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
     then
         echo "$HOSTNAME Found in your $ETC_HOSTS, Removing now...";

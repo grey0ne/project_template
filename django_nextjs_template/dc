@@ -9,12 +9,17 @@ DEPLOY_DIR="$PROJECT_DIR/deploy"
 DEV_COMPOSE="docker compose -f $DEPLOY_DIR/compose/dev.yml --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.dev"
 BALANCER_COMPOSE="docker compose -f $DEPLOY_DIR/compose/balancer.yml"
 
+
 DEV_SUPERUSER_PASSWORD="devpass"
 PROJECT_TEMPLATE_DIR="$HOME/projects/project_template"
+
 
 source $DEPLOY_DIR/env.base
 source $DEPLOY_DIR/env.dev
 source $PROJECT_DIR/.env
+
+PROD_DIR="/app/$PROJECT_NAME"
+DOCKER_IMAGE_PREFIX="$REGISTRY_HOSTNAME/$REGISTRY_NAMESPACE/$PROJECT_NAME"
 
 if [ $1 = "django" ]; then
     $DEV_COMPOSE run --rm django python manage.py "${@:2}"
@@ -41,6 +46,12 @@ elif [ $1 = "s3backupdev" ]; then
     docker run -it --rm -v ${PROJECT_DIR}/backend:/app/src -v ${PROJECT_DIR}/s3_backup:/tmp/s3_backup --env-file $DEPLOY_DIR/env.base --env-file $DEPLOY_DIR/env.dev --network=$PROJECT_NAME $PROJECT_NAME-django python s3_backup.py
 elif [ $1 = "s3backupprod" ]; then
     docker run -it --rm -v ${PROJECT_DIR}/backend:/app/src -v ${PROJECT_DIR}/s3_backup:/tmp/s3_backup --env-file $DEPLOY_DIR/env.base --env-file $DEPLOY_DIR/env.prod $PROJECT_NAME-django python s3_backup.py
+elif [ $1 = "dumpprod" ]; then
+    source $DEPLOY_DIR/env.prod
+    ssh root@$PROJECT_DOMAIN "docker run --rm -i -e PGPASSWORD=$DATABASE_PASSWORD postgres:16.4-alpine pg_dump -U $DATABASE_USER -h $DATABASE_HOST -p $DATABASE_PORT $DATABASE_NAME" > $PROJECT_NAME.sql
+elif [ $1 = "restoreprod" ]; then
+    source $DEPLOY_DIR/env.prod
+    ssh root@$PROJECT_DOMAIN "docker run --rm -i -e PGPASSWORD=$DATABASE_PASSWORD postgres:16.4-alpine psql -U $DATABASE_USER -h $DATABASE_HOST -p $DATABASE_PORT restoreddb" < $PROJECT_NAME.sql
 elif [ $1 = "deploystage" ]; then
     source $DEPLOY_DIR/env.stage
     $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.stage
@@ -55,7 +66,7 @@ elif [ $1 = "nginx" ]; then
     $BALANCER_COMPOSE "${@:2}"
 elif [ $1 = "djangoprod" ]; then
     source $DEPLOY_DIR/env.prod
-    ssh root@$PROJECT_DOMAIN "cd /app/$PROJECT_NAME && ./manage_prod.sh ${@:2}"
+    ssh root@$PROJECT_DOMAIN "docker run --rm -i --env-file=$PROD_DIR/env.base --env-file=$PROD_DIR/env $DOCKER_IMAGE_PREFIX-django python manage.py ${@:2}"
 elif [ $1 = "logsprod" ]; then
     source $DEPLOY_DIR/env.prod
     ssh root@$PROJECT_DOMAIN "docker service logs ${PROJECT_NAME}_${2}"

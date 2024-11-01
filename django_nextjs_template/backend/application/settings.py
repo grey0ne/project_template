@@ -122,9 +122,11 @@ STATIC_S3_STORAGE['OPTIONS']['default_acl'] = 'public-read'
 STATIC_S3_STORAGE['OPTIONS']['querystring_auth'] = False
 STATIC_S3_STORAGE['OPTIONS']['domain'] = S3_STATIC_DOMAIN
 
+LOCAL_STATIC_STORAGE: dict[str, Any] = { "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage" }
+
 STORAGES: dict[str, Any] = {
     "default": MEDIA_S3_STORAGE,
-    "staticfiles": STATIC_S3_STORAGE
+    "staticfiles": LOCAL_STATIC_STORAGE if DEBUG else STATIC_S3_STORAGE
 }
 
 AUTH_PASSWORD_VALIDATORS = [

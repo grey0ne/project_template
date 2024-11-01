@@ -49,7 +49,7 @@ services:
       - devnet
 
   postgres:
-    image: "postgres:16.1-alpine"
+    image: "postgres:16.4-alpine"
     container_name: ${PROJECT_NAME}-postgres
     environment:
       POSTGRES_PASSWORD: ${PROJECT_NAME}

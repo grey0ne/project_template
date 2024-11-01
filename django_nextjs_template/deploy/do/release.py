@@ -1,4 +1,4 @@
-from do_utils import request, save_env_option
+from utils import request, save_env_option
 import os
 
 CURRENT_VERION = int(os.getenv('PROJECT_VERSION', 1))
