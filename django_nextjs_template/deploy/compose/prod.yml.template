@@ -12,9 +12,6 @@ services:
     volumes:
       - certbot-certificates:/etc/letsencrypt
       - certbot-challenge:/var/www/certbot
-    depends_on:
-      - django
-      - nextjs
     ports:
       - "80:80"
       - "443:443"

@@ -39,7 +39,7 @@ DOCKER_IMAGE_PREFIX="$REGISTRY_HOSTNAME/$REGISTRY_NAMESPACE/$PROJECT_NAME"
 DEPLOY_HOSTNAME=$PROJECT_DOMAIN
 
 print_status "Collecting static files for django"
-docker run --rm -i --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.dev -e BUILD_STATIC=true -v ./backend:/app/src $PROJECT_NAME-django python manage.py collectstatic --noinput
+docker run --rm -i --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.prod -e BUILD_STATIC=true -v ./backend:/app/src $PROJECT_NAME-django python manage.py collectstatic --noinput
 print_status "Building images"
 export DOCKER_CLI_HINTS="false"
 export NGINX_IMAGE=$(build_image "nginx" "deploy/nginx/Dockerfile" ".")

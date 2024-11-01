@@ -96,6 +96,8 @@ S3_SIGNATURE_VERSION = config_get("S3_SIGNATURE_VERSION", default='v4')
 S3_ACL = config_get("S3_ACL", default='private')
 S3_BUCKET = config_get("S3_BUCKET_NAME", default=f'{PROJECT_NAME}-media')
 
+STATIC_URL = '/static/' if DEBUG else f'https://{S3_DOMAIN}/{S3_BUCKET}/'
+
 MEDIA_S3_STORAGE: dict[str, Any] = {
     "BACKEND": "application.s3_storage.CustomS3Storage",
     "OPTIONS": {
@@ -112,17 +114,10 @@ MEDIA_S3_STORAGE: dict[str, Any] = {
     },
 }
 
-# This is used during build phase to collect static files to nginx image
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(SOURCE_DIR, 'static')
-
 STORAGES: dict[str, Any] = {
     "default": MEDIA_S3_STORAGE,
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    }
+    "staticfiles": MEDIA_S3_STORAGE
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
