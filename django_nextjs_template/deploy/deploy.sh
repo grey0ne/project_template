@@ -42,8 +42,6 @@ print_status "Collecting static files for django"
 docker run --rm -i --env-file=$DEPLOY_DIR/env.base --env-file=$DEPLOY_DIR/env.prod -e BUILD_STATIC=true -v ./backend:/app/src $PROJECT_NAME-django python manage.py collectstatic --noinput
 print_status "Building images"
 export DOCKER_CLI_HINTS="false"
-export NGINX_IMAGE=$(build_image "nginx" "deploy/nginx/Dockerfile" ".")
-rm -rf backend/static
 export DJANGO_IMAGE=$(build_image "django" "backend/Dockerfile.prod" "backend")
 cd spa
 npm run build
@@ -57,7 +55,6 @@ echo $REGISTRY_PASSWORD | docker login $REGISTRY_HOSTNAME --username $REGISTRY_U
 print_status "Pushing images to registry"
 docker push $DOCKER_IMAGE_PREFIX-django
 docker push $DOCKER_IMAGE_PREFIX-nextjs
-docker push $DOCKER_IMAGE_PREFIX-nginx
 
 print_status "Deploying to $DEPLOY_HOSTNAME"
 ssh root@$DEPLOY_HOSTNAME "mkdir -p /app/$PROJECT_NAME"
