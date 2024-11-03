@@ -57,8 +57,7 @@ elif [ $1 = "deploystage" ]; then
     $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.stage
 elif [ $1 = "deployprod" ]; then
     source $DEPLOY_DIR/env.prod
-    python3 $DEPLOY_DIR/do/release.py
-    $DEPLOY_DIR/deploy.sh $DEPLOY_DIR/env.prod
+    python3.12 $DEPLOY_DIR/deploy.py
 elif [ $1 = "updatenginx" ]; then
     mkdir -p ${NGINX_CONFIG_DIR}
     envsubst '$PROJECT_NAME,$PROJECT_DOMAIN' < $DEPLOY_DIR/nginx/conf/nginx_dev.template > $NGINX_CONFIG_DIR/$PROJECT_NAME.conf
@@ -79,7 +78,7 @@ elif [ $1 = "gencerts" ]; then
     $DEPLOY_DIR/update_hosts.sh addhost media.$PROJECT_DOMAIN
 elif [ $1 = "initinfra" ]; then
     source $DEPLOY_DIR/env.prod
-    python3 $DEPLOY_DIR/do/do_init.py
+    python3.12 $DEPLOY_DIR/do/do_init.py
 elif [ $1 = "initprod" ]; then
     source $DEPLOY_DIR/env.prod
     $DEPLOY_DIR/production_setup.sh $PROJECT_DOMAIN

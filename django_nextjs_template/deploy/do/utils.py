@@ -4,7 +4,7 @@ import urllib.error
 import urllib.request
 import json
 import fileinput
-from do_constants import PROD_ENV_FILE
+from do.do_constants import PROD_ENV_FILE
 
 class Response(NamedTuple):
     body: str

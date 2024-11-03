@@ -1,4 +1,4 @@
-from utils import request, save_env_option
+from do.utils import request, save_env_option
 import os
 
 CURRENT_VERION = int(os.getenv('PROJECT_VERSION', 1))
@@ -32,5 +32,3 @@ def release():
     save_env_option('PROJECT_VERSION', str(next_version))
     save_env_option('NEXT_PUBLIC_VERSION', str(next_version))
     sentry_release(str(next_version))
-
-release()

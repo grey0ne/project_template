@@ -1,13 +1,12 @@
 from typing import Any
 import time
-from utils import request
+from do.utils import request
 
-from do_constants import (
+from do.do_constants import (
     DO_HEADERS, DO_API_DOMAIN, DROPLETS_URL, REGION, DROPLET_SIZE,
     DROPLET_OS_IMAGE, SSH_FINGERPRINT, DROPLET_TAGS, PG_SIZE, PG_VERSION, PG_NODES_NUM,
     STATUS_CHECK_INTERVAL
 )
-
 
 
 class DOException(Exception):
