@@ -58,15 +58,6 @@ INIT_SWARM_SCRIPT = f"""
 {JOIN_SWARM}
 """
 
-UPDATE_SWARM_SCRIPT = f"""
-{PRINT_COMMAND}
-print_status "Update swarm"
-docker stack config -c {PROD_APP_PATH}/prod.yml | docker stack deploy --with-registry-auth --detach=false -c - {PROJECT_NAME}
-print_status "Prune images"
-docker image prune -f
-print_status "Deploy completed"
-"""
-
 COLLECT_STATIC_SCRIPT = PRINT_COMMAND + f"""
 print_status "Collecting static files for django"
 docker run --rm -i --env-file={DEPLOY_DIR}/env.base --env-file={DEPLOY_DIR}/env.prod -e BUILD_STATIC=true -v ./backend:/app/src {PROJECT_NAME}-django python manage.py collectstatic --noinput
@@ -116,7 +107,9 @@ docker exec $NGINX_CONTAINER nginx -s reload
 """
 
 SETUP_CERTBOT = f"""
-docker run --rm --name temp_certbot -p 80:80 -v /app/certbot/certificates:/etc/letsencrypt certbot/certbot:v1.14.0 certonly --non-interactive --keep-until-expiring --standalone --preferred-challenges http --agree-tos --text --email sergey.lihobabin@gmail.com -d {PROJECT_DOMAIN}
+CERTS_VOLUME=/app/certbot/certificates
+CHALLENGE_VOLUME=/app/certbot/challenge
+docker run --rm --name temp_certbot -v $CERTS_VOLUME:/etc/letsencrypt -v $CHALLENGE_VOLUME:/tmp/letsencrypt certbot/certbot:v1.14.0 certonly --non-interactive --webroot --agree-tos --keep-until-expiring --text --email sergey.lihobabin@gmail.com -d {PROJECT_DOMAIN} -w /tmp/letsencrypt
 """
 GEN_FAKE_CERTS = f"""
 cp -r /app/certbot/certificates/live/{PROJECT_DOMAIN} /app/certbot/certificates/live/dummy

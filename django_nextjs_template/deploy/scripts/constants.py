@@ -1,7 +1,13 @@
 import os
 
-PROJECT_DOMAIN = os.getenv("PROJECT_DOMAIN")
-PROJECT_NAME = os.getenv("PROJECT_NAME")
+def get_value(key: str) -> str:
+    result = os.getenv(key)
+    if result is None:
+        raise ValueError(f'Variable {key} is required')
+    return result
+
+PROJECT_DOMAIN = get_value("PROJECT_DOMAIN")
+PROJECT_NAME = get_value("PROJECT_NAME")
 REGISTRY_USERNAME = os.getenv("REGISTRY_USERNAME")
 REGISTRY_PASSWORD = os.getenv("REGISTRY_PASSWORD")
 REGISTRY_HOSTNAME = os.getenv("REGISTRY_HOSTNAME")

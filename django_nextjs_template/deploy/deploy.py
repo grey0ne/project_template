@@ -1,8 +1,8 @@
 from scripts.commands import (
     INIT_SWARM_SCRIPT, PERFORM_MIGRATIONS, COLLECT_STATIC_SCRIPT,
-    BUILD_IMAGES_SCRIPT, UPDATE_SWARM_SCRIPT, RELOAD_NGINX
+    BUILD_IMAGES_SCRIPT, RELOAD_NGINX
 )
-from scripts.helpers import run_command, run_remote_commands, copy_to_remote, print_status, get_image_hash
+from scripts.helpers import run_command, run_remote_commands, copy_to_remote, print_status, get_image_hash, update_swarm
 from scripts.constants import DEPLOY_DIR, PROD_APP_PATH, PROJECT_DOMAIN, COMPOSE_DIR, DOCKER_IMAGE_PREFIX, PROJECT_NAME
 from scripts.release import release
 import os
@@ -32,7 +32,7 @@ print_status(f"Copiyng env files to {PROJECT_DOMAIN}")
 copy_to_remote(f"{DEPLOY_DIR}/env.base", f"{PROD_APP_PATH}/env.base")
 copy_to_remote(ENV_FILE, f"{PROD_APP_PATH}/env")
 run_remote_commands([INIT_SWARM_SCRIPT, PERFORM_MIGRATIONS])
-run_remote_commands([UPDATE_SWARM_SCRIPT, ])
+update_swarm(f'{PROD_APP_PATH}/prod.yml', PROJECT_NAME)
 
 run_command(f"envsubst '$PROJECT_NAME,$PROJECT_DOMAIN' < {DEPLOY_DIR}/nginx/conf/nginx_prod.template > {DEPLOY_DIR}/nginx/conf/{PROJECT_NAME}.conf")
 copy_to_remote(f'{DEPLOY_DIR}/nginx/conf/{PROJECT_NAME}.conf', f'/app/balancer/conf/{PROJECT_NAME}.conf')
