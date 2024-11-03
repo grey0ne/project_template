@@ -1,6 +1,7 @@
 from scripts.constants import (
     REGISTRY_PASSWORD, REGISTRY_HOSTNAME, REGISTRY_USERNAME,
-    DOCKER_IMAGE_PREFIX, PROD_APP_PATH, DEPLOY_DIR, PROJECT_NAME, PROJECT_DIR
+    DOCKER_IMAGE_PREFIX, PROD_APP_PATH, DEPLOY_DIR, PROJECT_NAME,
+    PROJECT_DIR, PROJECT_DOMAIN
 )
 
 PRINT_COMMAND = """
@@ -85,8 +86,6 @@ function build_image () {
     print_status "Building $1"
     docker build --secret id=sentry_auth,env=SENTRY_AUTH_TOKEN  -t {DOCKER_IMAGE_PREFIX}-$1 -f $2 $3  --platform linux/amd64
     {CHECK_BUILD_STATUS}
-    print_status "$1 image hash: $RESULT"
-    echo $RESULT
 """ + """
 }
 """
@@ -98,12 +97,11 @@ BUILD_IMAGES_SCRIPT = f"""
 
 print_status "Building images"
 export DOCKER_CLI_HINTS="false"
-export DJANGO_IMAGE=$(build_image "django" "{PROJECT_DIR}/backend/Dockerfile.prod" "backend")
+build_image "django" "{PROJECT_DIR}/backend/Dockerfile.prod" "backend"
 cd {PROJECT_DIR}/spa
 npm run build
 cd {PROJECT_DIR}
-export NEXTJS_IMAGE=$(build_image "nextjs" "{PROJECT_DIR}/spa/Dockerfile.prod" "spa")
-print_status "$NEXTJS_IMAGE"
+build_image "nextjs" "{PROJECT_DIR}/spa/Dockerfile.prod" "spa"
 
 {LOGIN_REGISTRY}
 print_status "Pushing images to registry"
@@ -115,4 +113,33 @@ docker push {DOCKER_IMAGE_PREFIX}-nextjs
 RELOAD_NGINX = f"""
 NGINX_CONTAINER=$(docker ps -q -f name=nginx)
 docker exec $NGINX_CONTAINER nginx -s reload
+"""
+
+SETUP_CERTBOT = f"""
+docker run --rm --name temp_certbot -p 80:80 -v /app/certbot/certificates:/etc/letsencrypt certbot/certbot:v1.14.0 certonly --non-interactive --keep-until-expiring --standalone --preferred-challenges http --agree-tos --text --email sergey.lihobabin@gmail.com -d {PROJECT_DOMAIN}
+"""
+GEN_FAKE_CERTS = f"""
+cp -r /app/certbot/certificates/live/{PROJECT_DOMAIN} /app/certbot/certificates/live/dummy
+"""
+
+SETUP_DOCKER = """
+if [ -x "$(command -v docker)" ]; then
+   echo "Docker already installed"
+else
+    # Add Docker's official GPG key:
+    apt update
+    apt upgrade -y
+    apt install ca-certificates curl -y
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+    chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add the repository to Apt sources:
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+      tee /etc/apt/sources.list.d/docker.list > /dev/null
+    apt update
+    apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+fi
 """
