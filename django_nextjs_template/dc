@@ -33,7 +33,7 @@ elif [ $1 = "test" ]; then
 elif [ $1 = "format" ]; then
     $DEV_COMPOSE run --rm django sh -c 'isort . && black .'
 elif [ $1 = "tmux" ]; then
-    ./dev-scripts/tmux_dev.sh
+    $DEPLOY_DIR/tmux_dev.sh
 elif [ $1 = "devsuperuser" ]; then
     $DEV_COMPOSE run --rm django sh -c "export DJANGO_SUPERUSER_PASSWORD='devpass' && python manage.py createsuperuser --noinput --username $2 --email $2@$2.com"
 elif [ $1 = "buildtest" ]; then

@@ -1,5 +1,5 @@
 #!/bin/bash
-SESSION=metagamedev
+SESSION="${PROJECT_NAME}dev"
 
 tmux kill-session -t $SESSION
 tmux new-session -d -s $SESSION
