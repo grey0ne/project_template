@@ -60,7 +60,7 @@ INIT_SWARM_SCRIPT = f"""
 UPDATE_SWARM_SCRIPT = f"""
 {PRINT_COMMAND}
 print_status "Update swarm"
-docker stack config -c prod.yml | docker stack deploy --with-registry-auth --detach=false -c - {PROJECT_NAME}
+docker stack config -c {PROD_APP_PATH}/prod.yml | docker stack deploy --with-registry-auth --detach=false -c - {PROJECT_NAME}
 print_status "Prune images"
 docker image prune -f
 print_status "Deploy completed"
@@ -71,8 +71,6 @@ print_status "Collecting static files for django"
 docker run --rm -i --env-file={DEPLOY_DIR}/env.base --env-file={DEPLOY_DIR}/env.prod -e BUILD_STATIC=true -v ./backend:/app/src {PROJECT_NAME}-django python manage.py collectstatic --noinput
 """
 
-GET_IMAGE_HASH = "$(docker inspect --format='{{index .RepoDigests 0}}'"
-GET_IMAGE_RESULT = f"local RESULT={GET_IMAGE_HASH} {DOCKER_IMAGE_PREFIX}-$1)"
 CHECK_BUILD_STATUS = """
     BUILD_RESULT_STATUS=$?
     if [ ${BUILD_RESULT_STATUS} -ne 0 ]; then
@@ -87,7 +85,6 @@ function build_image () {
     print_status "Building $1"
     docker build --secret id=sentry_auth,env=SENTRY_AUTH_TOKEN  -t {DOCKER_IMAGE_PREFIX}-$1 -f $2 $3  --platform linux/amd64
     {CHECK_BUILD_STATUS}
-    {GET_IMAGE_RESULT}
     print_status "$1 image hash: $RESULT"
     echo $RESULT
 """ + """
@@ -113,3 +110,9 @@ print_status "Pushing images to registry"
 docker push {DOCKER_IMAGE_PREFIX}-django
 docker push {DOCKER_IMAGE_PREFIX}-nextjs
 """ 
+
+
+RELOAD_NGINX = f"""
+NGINX_CONTAINER=$(docker ps -q -f name=nginx)
+docker exec $NGINX_CONTAINER nginx -s reload
+"""

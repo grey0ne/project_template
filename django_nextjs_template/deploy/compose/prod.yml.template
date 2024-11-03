@@ -6,16 +6,16 @@ services:
     networks:
       - prodnet
     env_file:
-      - env.base
-      - env
+      - /app/${PROJECT_NAME}/env.base
+      - /app/${PROJECT_NAME}/env
 
   ${PROJECT_NAME}-nextjs:
     image: ${NEXTJS_IMAGE}
     networks:
       - prodnet
     env_file:
-      - env.base
-      - env
+      - /app/${PROJECT_NAME}/env.base
+      - /app/${PROJECT_NAME}/env
 
 
 networks:

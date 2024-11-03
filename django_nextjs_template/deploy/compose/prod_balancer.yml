@@ -1,14 +1,11 @@
-name: balancer
 
 services:
   nginx:
     image: "nginx:1.27.2-alpine-slim"
-    container_name: nginx
     volumes:
       - /app/certbot/certificates:/etc/letsencrypt
       - /app/certbot/challenge:/var/www/certbot
-      - /app/nginx/conf:/etc/nginx/conf.d
-      - /app/nginx/dummycerts:/etc/dummycerts
+      - /app/balancer/conf:/etc/nginx/conf.d
     ports:
       - "80:80"
       - "443:443"
