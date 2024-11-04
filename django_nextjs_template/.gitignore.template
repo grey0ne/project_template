@@ -113,8 +113,8 @@ spa/.next
 .env.local
 .env
 backend/local_settings.py
-deploy/env.stage
-deploy/env.prod
+environment/env.stage
+environment/env.prod
 deploy/ssl/*.key
 deploy/ssl/*.crt
 backup
