@@ -15,7 +15,10 @@ REGISTRY_NAMESPACE = os.getenv("REGISTRY_NAMESPACE")
 DOCKER_IMAGE_PREFIX = f'{REGISTRY_HOSTNAME}/{REGISTRY_NAMESPACE}/{PROJECT_NAME}'
 DEPLOY_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_DIR = os.path.dirname(DEPLOY_DIR)
+ENV_DIR = os.path.join(PROJECT_DIR, 'environment')
 COMPOSE_DIR = os.path.join(DEPLOY_DIR, 'compose')
 
 PROD_APP_PATH = f'/app/{PROJECT_NAME}'
 
+PROD_ENV_FILE = f'{ENV_DIR}/env.prod'
+BASE_ENV_FILE = f'{ENV_DIR}/env.base'

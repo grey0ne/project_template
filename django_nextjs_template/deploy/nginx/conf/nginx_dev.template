@@ -31,6 +31,15 @@ server {
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-Proto 'https';
     }
+
+    location ~ ^/ {
+        set $minio${PROJECT_NAME} ${PROJECT_NAME}-minio;
+        proxy_pass http://$minio${PROJECT_NAME}:9001;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-Proto 'https';
+    }
 }
 
 server {
@@ -54,15 +63,6 @@ server {
     location ~ ^/(admin|api|login|complete|static|s)/ {
         set $django${PROJECT_NAME} ${PROJECT_NAME}-django;
         proxy_pass http://$django${PROJECT_NAME}:8000;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Scheme $scheme;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Forwarded-Proto 'https';
-    }
-
-    location ~ ^/(minio-admin)/ {
-        set $minio${PROJECT_NAME} ${PROJECT_NAME}-minio;
-        proxy_pass http://$minio${PROJECT_NAME}:9001;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header Host $http_host;

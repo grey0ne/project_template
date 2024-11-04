@@ -9,8 +9,8 @@ services:
     build:
       context: ${PROJECT_DIR}/backend
     env_file:
-      - ${DEPLOY_DIR}/env.base
-      - ${DEPLOY_DIR}/env.dev
+      - ${PROJECT_DIR}/environment/env.base
+      - ${PROJECT_DIR}/environment/env.dev
     volumes:
       - ${PROJECT_DIR}/backend:/app/src
     depends_on:
@@ -26,8 +26,8 @@ services:
     build:
       context: ${PROJECT_DIR}/spa
     env_file:
-      - ${DEPLOY_DIR}/env.base
-      - ${DEPLOY_DIR}/env.dev
+      - ${PROJECT_DIR}/environment/env.base
+      - ${PROJECT_DIR}/environment/env.dev
     volumes:
       - ${PROJECT_DIR}/spa:/app
     networks:

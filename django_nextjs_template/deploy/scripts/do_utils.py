@@ -1,8 +1,8 @@
 from typing import Any
 import time
-from do.utils import request
+from scripts.utils import request
 
-from do.do_constants import (
+from scripts.do_constants import (
     DO_HEADERS, DO_API_DOMAIN, DROPLETS_URL, REGION, DROPLET_SIZE,
     DROPLET_OS_IMAGE, SSH_FINGERPRINT, DROPLET_TAGS, PG_SIZE, PG_VERSION, PG_NODES_NUM,
     STATUS_CHECK_INTERVAL

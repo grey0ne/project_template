@@ -13,6 +13,8 @@ do
 done
 
 TMP_DIR=$SCRIPT_DIR/tmp_templ
+TMP_ENV_DIR=$TMP_DIR/environment
+TARGET_ENV_DIR=$TARGET_DIR/environment
 TEMPLATE_DIR=$SCRIPT_DIR/$TEMPLATE
 
 echo "Updating $TARGET_DIR with template $TEMPLATE_DIR"
@@ -29,10 +31,10 @@ done
 mv $TMP_DIR/.gitignore.template $TMP_DIR/.gitignore # Copy gitingore from template so is doesn't affect template repo
 
 rsync -r $TMP_DIR/ $TARGET_DIR/
-cp -n $TMP_DIR/deploy/env.prod.template $TARGET_DIR/deploy/env.prod
-rm $TARGET_DIR/deploy/env.prod.template
-cp -n $TMP_DIR/deploy/env.stage.template $TARGET_DIR/deploy/env.stage
-rm $TARGET_DIR/deploy/env.stage.template
+cp -n $TMP_ENV_DIR/env.prod.template $TARGET_ENV_DIR/env.prod
+rm $TARGET_ENV_DIR/env.prod.template
+cp -n $TMP_ENV_DIR/env.stage.template $TARGET_ENV_DIR/env.stage
+rm $TARGET_ENV_DIR/env.stage.template
 cp -n $TMP_DIR/spa/next.config.mjs.template $TARGET_DIR/spa/next.config.mjs
 rm $TARGET_DIR/spa/next.config.mjs.template
 rm -rf $TMP_DIR

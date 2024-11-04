@@ -1,8 +1,7 @@
 import os
+from scripts.constants import PROJECT_NAME
 
-PROJECT_NAME = os.getenv("PROJECT_NAME", '')
 PROJECT_DESCRIPTION = f"{PROJECT_NAME} project"
-PROJECT_DOMAIN = os.getenv("PROJECT_DOMAIN", '')
 
 DO_TOKEN = os.getenv("DO_TOKEN", '')
 REGION = os.getenv("DO_REGION", "ams3")
@@ -28,7 +27,3 @@ DO_HEADERS = {
     "Authorization": f"Bearer {DO_TOKEN}",
     "Content-Type": "application/json"
 }
-
-SCRIPTS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROD_ENV_FILE = os.path.join(SCRIPTS_DIR, 'env.prod')
-BASE_ENV_FILE = os.path.join(SCRIPTS_DIR, 'env.base')

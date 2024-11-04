@@ -47,3 +47,10 @@ def setup_balancer():
     copy_to_remote(f'{DEPLOY_DIR}/nginx/conf/balancer.conf', '/app/balancer/conf/default.conf')
     update_swarm('/app/balancer/compose.yml', 'balancer')
     reload_nginx()
+
+def envsubst(from_file: str, to_file: str, variables: list[str] = []):
+    if variables:
+        variables_str = f"'{",".join([f'${var}' for var in variables])}'"
+    else:
+        variables_str = ""
+    run_command(f'envsubst {variables_str} < {from_file} > {to_file}')

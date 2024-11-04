@@ -1,7 +1,7 @@
 from scripts.constants import (
     REGISTRY_PASSWORD, REGISTRY_HOSTNAME, REGISTRY_USERNAME,
-    DOCKER_IMAGE_PREFIX, PROD_APP_PATH, DEPLOY_DIR, PROJECT_NAME,
-    PROJECT_DIR, PROJECT_DOMAIN
+    DOCKER_IMAGE_PREFIX, PROD_APP_PATH, PROJECT_NAME,
+    PROJECT_DIR, PROJECT_DOMAIN, PROD_ENV_FILE, BASE_ENV_FILE
 )
 
 PRINT_COMMAND = """
@@ -60,7 +60,7 @@ INIT_SWARM_SCRIPT = f"""
 
 COLLECT_STATIC_SCRIPT = PRINT_COMMAND + f"""
 print_status "Collecting static files for django"
-docker run --rm -i --env-file={DEPLOY_DIR}/env.base --env-file={DEPLOY_DIR}/env.prod -e BUILD_STATIC=true -v ./backend:/app/src {PROJECT_NAME}-django python manage.py collectstatic --noinput
+docker run --rm -i --env-file={BASE_ENV_FILE} --env-file={PROD_ENV_FILE} -e BUILD_STATIC=true -v ./backend:/app/src {PROJECT_NAME}-django python manage.py collectstatic --noinput
 """
 
 CHECK_BUILD_STATUS = """
