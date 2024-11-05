@@ -73,7 +73,7 @@ elif [ $1 = "djangoprod" ]; then
     ssh root@$PROJECT_DOMAIN "docker run --rm -i --env-file=$PROD_DIR/env.base --env-file=$PROD_DIR/env $DOCKER_IMAGE_PREFIX-django python manage.py ${@:2}"
 elif [ $1 = "logsprod" ]; then
     source $PROD_ENV
-    ssh root@$PROJECT_DOMAIN "docker service logs ${PROJECT_NAME}_${2}"
+    ssh root@$PROJECT_DOMAIN "docker service logs ${PROJECT_NAME}_${PROJECT_NAME}-${2}"
 elif [ $1 = "gencerts" ]; then
     $DEPLOY_DIR/generate_certs.sh ${PROJECT_NAME} ${PROJECT_DOMAIN}
     $DEPLOY_DIR/generate_certs.sh media_${PROJECT_NAME} media.${PROJECT_DOMAIN}
