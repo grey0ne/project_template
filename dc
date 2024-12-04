@@ -15,6 +15,7 @@ BALANCER_COMPOSE="docker compose -f $DEPLOY_DIR/compose/balancer.yml"
 DEV_SUPERUSER_PASSWORD="devpass"
 PROJECT_TEMPLATE_DIR="$HOME/projects/project_template"
 
+S3_BACKUP_COMMAND="docker run -it --rm -v ${PROJECT_DIR}/backend:/app/src -v ${PROJECT_DIR}/deploy:/app/deploy -v ${PROJECT_DIR}/backup/s3_backup:/tmp/s3_backup --network ${PROJECT_NAME} --env-file $ENV_DIR/env.base"
 
 source $ENV_DIR/env.base
 source $ENV_DIR/env.dev
@@ -45,9 +46,13 @@ elif [ $1 = "runtest" ]; then
 elif [ $1 = "generatetypes" ]; then
     $DEV_COMPOSE exec nextjs npx -y openapi-typescript http://${PROJECT_NAME}-django:8000/api/openapi.json --output api/apiTypes.ts
 elif [ $1 = "s3backupdev" ]; then
-    docker run -it --rm -v ${PROJECT_DIR}/backend:/app/src -v ${PROJECT_DIR}/backup/s3_backup:/tmp/s3_backup --env-file $DEPLOY_DIR/env.base --env-file $DEPLOY_DIR/env.dev --network=$PROJECT_NAME $PROJECT_NAME-django python s3_backup.py
+    $S3_BACKUP_COMMAND --env-file $ENV_DIR/env.dev --network=$PROJECT_NAME $PROJECT_NAME-django python s3_backup.py
 elif [ $1 = "s3backupprod" ]; then
-    docker run -it --rm -v ${PROJECT_DIR}/backend:/app/src -v ${PROJECT_DIR}/backup/s3_backup:/tmp/s3_backup --env-file $DEPLOY_DIR/env.base --env-file $DEPLOY_DIR/env.prod $PROJECT_NAME-django python s3_backup.py
+    $S3_BACKUP_COMMAND --env-file $ENV_DIR/env.prod $PROJECT_NAME-django python /app/deploy/scripts/s3_backup.py
+elif [ $1 = "s3restoreprod" ]; then
+    $S3_BACKUP_COMMAND --env-file $ENV_DIR/env.prod $PROJECT_NAME-django python /app/deploy/scripts/s3_upload.py
+elif [ $1 = "s3restoredev" ]; then
+    $S3_BACKUP_COMMAND --env-file $ENV_DIR/env.dev $PROJECT_NAME-django python /app/deploy/scripts/s3_upload.py
 elif [ $1 = "dumpprod" ]; then
     source $PROD_ENV
     ssh root@$PROJECT_DOMAIN "docker run --rm -i -e PGPASSWORD=$DATABASE_PASSWORD postgres:16.4-alpine pg_dump -U $DATABASE_USER -h $DATABASE_HOST -p $DATABASE_PORT $DATABASE_NAME" > backup/$PROJECT_NAME.sql
