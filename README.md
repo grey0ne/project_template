@@ -4,11 +4,22 @@ Update project from template
 ```
 Or from the project itself
 ```bash
-./dc updatetemplate
+pc updatetemplate
+```
+
+Link binary
+```bash
+sudo ln -s /full_path_to_repo/dc /usr/local/bin/pc
+```
+
+Install envsubst
+```bash
+brew install gettext
+brew link --force gettext
 ```
 
 Init Digital ocean for project
 ```bash
-./dc initinfra
+pc initinfra
 ```
 Sadly DO API doesn't have a way to give PG user grants on database so you have to use admin user and copy admin password from DO admin
