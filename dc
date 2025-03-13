@@ -87,6 +87,7 @@ elif [ $1 = "logsprod" ]; then
     ssh root@$PROJECT_DOMAIN "docker service logs ${PROJECT_NAME}_${PROJECT_NAME}-${2}"
 elif [ $1 = "gencerts" ]; then
     python3.12 $DEPLOY_DIR/generate_dev_certificates.py
+    $BALANCER_COMPOSE restart
 elif [ $1 = "initinfra" ]; then
     source $PROD_ENV
     python3.12 $DEPLOY_DIR/initinfra.py
