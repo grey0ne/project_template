@@ -79,11 +79,11 @@ else:
 
 DATABASES: dict[str, Any] = {
     "default": {
-        "NAME": config_get_str('DATABASE_NAME'),
-        "USER": config_get_str('DATABASE_USER'),
-        "HOST": config_get_str('DATABASE_HOST'),
+        "NAME": config_get_str('DATABASE_NAME', default=PROJECT_NAME),
+        "USER": config_get_str('DATABASE_USER', default=PROJECT_NAME),
+        "HOST": config_get_str('DATABASE_HOST', default=f'{PROJECT_NAME}-postgres'),
         "PORT": config_get_str('DATABASE_PORT', default='5432'),
-        "PASSWORD": config_get_str('DATABASE_PASSWORD'),
+        "PASSWORD": config_get_str('DATABASE_PASSWORD', default=PROJECT_NAME),
         "ENGINE": "django.db.backends.postgresql",
         "OPTIONS": db_options
     }
@@ -92,12 +92,13 @@ DATABASES: dict[str, Any] = {
 S3_ACCESS_KEY_ID = config_get("S3_ACCESS_KEY_ID")
 S3_SECRET_KEY = config_get("S3_SECRET_KEY")
 S3_ENDPOINT = config_get("S3_ENDPOINT_URL", default=f'http://{PROJECT_NAME}-minio:9000')
-S3_MEDIA_DOMAIN = config_get("S3_MEDIA_DOMAIN", default=f'media.{DOMAIN}')
 S3_STATIC_DOMAIN = config_get("S3_STATIC_DOMAIN", default=f'static.{DOMAIN}')
 S3_SIGNATURE_VERSION = config_get("S3_SIGNATURE_VERSION", default='v4')
 S3_ACL = config_get("S3_ACL", default='private')
 S3_MEDIA_BUCKET = config_get("S3_MEDIA_BUCKET", default=f'{PROJECT_NAME}-media')
 S3_STATIC_BUCKET = config_get("S3_STATIC_BUCKET", default=f'{PROJECT_NAME}-static')
+
+S3_MEDIA_DOMAIN = config_get("S3_MEDIA_DOMAIN", default=f'media.{DOMAIN}/{S3_MEDIA_BUCKET}' if DEBUG else f'media.{DOMAIN}')
 
 STATIC_URL = '/static/' if DEBUG else f'https://{S3_STATIC_DOMAIN}/{S3_STATIC_BUCKET}/'
 
@@ -109,7 +110,7 @@ MEDIA_S3_STORAGE: dict[str, Any] = {
         'access_key': S3_ACCESS_KEY_ID,
         'secret_key': S3_SECRET_KEY,
         'default_acl': S3_ACL,
-        'location': S3_MEDIA_BUCKET if DEBUG else '',
+        'location': '',
         'signature_version': S3_SIGNATURE_VERSION,
         'file_overwrite': True,
         'querystring_auth': S3_ACL == 'private',

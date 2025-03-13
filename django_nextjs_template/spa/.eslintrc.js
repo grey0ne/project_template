@@ -11,6 +11,6 @@ module.exports = {
         "@next/next/no-img-element": "off",
         "@typescript-eslint/no-unused-vars": ["error"],
         'react/jsx-indent': ['error', 4],
-        'max-len': ['error', { code: 140 }],
+        'max-len': ['error', { code: 140 }]
     },
 };

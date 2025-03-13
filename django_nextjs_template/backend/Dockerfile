@@ -11,3 +11,5 @@ RUN python -mpip install --upgrade pip --root-user-action=ignore
 RUN python -mpip install poetry && poetry install
 
 WORKDIR /app/src
+
+CMD python -m uvicorn --reload --lifespan off --host 0.0.0.0 --port 8000 application.asgi:application
