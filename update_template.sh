@@ -30,6 +30,21 @@ do
 done
 mv $TMP_DIR/.gitignore.template $TMP_DIR/.gitignore # Copy gitingore from template so is doesn't affect template repo
 
+copy_or_remove() {
+    local file_path=$1
+    if [ ! -f "$TARGET_DIR/$file_path" ]; then
+        cp -R "$TMP_DIR/$file_path" "$TARGET_DIR/$file_path"
+    else
+        rm -rf "$TMP_DIR/$file_path"
+    fi
+}
+
+copy_or_remove "backend/pyproject.toml"
+copy_or_remove "backend/application/project_settings.py"
+copy_or_remove "backend/application/urls.py"
+copy_or_remove "backend/application/api.py"
+copy_or_remove "backend/users"
+
 rsync -r $TMP_DIR/ $TARGET_DIR/
 cp -n $TMP_ENV_DIR/env.prod.template $TARGET_ENV_DIR/env.prod
 rm $TARGET_ENV_DIR/env.prod.template
@@ -39,3 +54,15 @@ cp -n $TMP_DIR/spa/next.config.mjs.template $TARGET_DIR/spa/next.config.mjs
 rm $TARGET_DIR/spa/next.config.mjs.template
 rm -rf $TMP_DIR
 
+touch $TARGET_DIR/.env
+
+cd $TARGET_DIR
+if [ ! -d "$TARGET_DIR/.git" ]; then
+    git init
+fi
+if [ ! -d "$TARGET_DIR/deploy" ]; then
+    git submodule add git@github.com:grey0ne/django-deploy.git deploy
+fi
+if [ ! -d "$TARGET_DIR/backend/dataorm" ]; then
+    git submodule add git@github.com:grey0ne/dataorm.git backend/dataorm
+fi
