@@ -44,19 +44,19 @@ copy_or_remove "backend/application/project_settings.py"
 copy_or_remove "backend/application/urls.py"
 copy_or_remove "backend/application/api.py"
 copy_or_remove "backend/users"
+copy_or_remove "spa/app"
 
 rsync -r $TMP_DIR/ $TARGET_DIR/
 cp -n $TMP_ENV_DIR/env.prod.template $TARGET_ENV_DIR/env.prod
 rm $TARGET_ENV_DIR/env.prod.template
 cp -n $TMP_ENV_DIR/env.stage.template $TARGET_ENV_DIR/env.stage
 rm $TARGET_ENV_DIR/env.stage.template
-cp -n $TMP_DIR/spa/next.config.mjs.template $TARGET_DIR/spa/next.config.mjs
-rm $TARGET_DIR/spa/next.config.mjs.template
 rm -rf $TMP_DIR
 
 touch $TARGET_DIR/.env
 
 cd $TARGET_DIR
+
 if [ ! -d "$TARGET_DIR/.git" ]; then
     git init
 fi
@@ -66,3 +66,8 @@ fi
 if [ ! -d "$TARGET_DIR/backend/dataorm" ]; then
     git submodule add git@github.com:grey0ne/dataorm.git backend/dataorm
 fi
+if [ ! -d "$TARGET_DIR/spa/next_utils" ]; then
+    git submodule add git@github.com:grey0ne/next_utils.git spa/next_utils
+fi
+
+git submodule update --init --recursive

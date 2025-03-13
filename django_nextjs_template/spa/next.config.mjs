@@ -2,11 +2,7 @@
 
 import { withSentryConfig } from "@sentry/nextjs";
 
-const nextConfig = {
-    experimental: {
-        instrumentationHook: true
-    },
-};
+const nextConfig = { };
 
 const sentryWebpackPluginOptions = {
     // Additional config options for the Sentry webpack plugin. Keep in mind that
