@@ -32,7 +32,8 @@ mv $TMP_DIR/.gitignore.template $TMP_DIR/.gitignore # Copy gitingore from templa
 
 copy_or_remove() {
     local file_path=$1
-    if [ ! -f "$TARGET_DIR/$file_path" ]; then
+    if [ ! -f "$TARGET_DIR/$file_path"  ] && [ ! -d "$TARGET_DIR/$file_path" ]; then
+        echo "Copying $TARGET_DIR/$file_path"
         cp -R "$TMP_DIR/$file_path" "$TARGET_DIR/$file_path"
     else
         rm -rf "$TMP_DIR/$file_path"
