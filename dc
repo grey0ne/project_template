@@ -29,6 +29,7 @@ if [ $1 = "django" ]; then
 elif [ $1 = "rebuild" ]; then
     $DEV_COMPOSE down
     $DEV_COMPOSE build nextjs django
+    $DEV_COMPOSE up -d
 elif [ $1 = "up" ]; then
     $BALANCER_COMPOSE up -d
     $DEV_COMPOSE up -d

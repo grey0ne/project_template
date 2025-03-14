@@ -46,6 +46,8 @@ copy_or_remove "backend/application/urls.py"
 copy_or_remove "backend/application/api.py"
 copy_or_remove "backend/users"
 copy_or_remove "spa/app"
+copy_or_remove "spa/api"
+copy_or_remove "environment/version"
 
 rsync -r $TMP_DIR/ $TARGET_DIR/
 cp -n $TMP_ENV_DIR/env.prod.template $TARGET_ENV_DIR/env.prod
