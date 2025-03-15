@@ -16,6 +16,7 @@
         "@mui/icons-material": "^6.1.5",
         "@mui/material": "^6.1.5",
         "@mui/material-nextjs": "^6.1.5",
+        "@mui/x-date-pickers": "7.27.3",
         "next": "^15.1.2",
         "react": "^19.0",
         "react-dom": "^19.0",
