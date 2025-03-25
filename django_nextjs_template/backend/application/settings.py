@@ -23,6 +23,7 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_TRUSTED_ORIGINS = [f'https://{DOMAIN}', ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_COOKIE_SECURE = True
 
 DEBUG = bool(config_get('DJANGO_DEBUG', default=False))
 
@@ -159,6 +160,3 @@ if SENTRY_DSN is not None:
     )
 
 from application.project_settings import *  # type: ignore used to customize templated settings
-
-SESSION_COOKIE_SECURE = not DEBUG
-

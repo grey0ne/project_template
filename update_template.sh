@@ -41,19 +41,22 @@ copy_or_remove() {
 }
 
 copy_or_remove "backend/pyproject.toml"
+copy_or_remove "backend/Dockerfile"
+copy_or_remove "backend/Dockerfile.prod"
 copy_or_remove "backend/application/project_settings.py"
 copy_or_remove "backend/application/urls.py"
 copy_or_remove "backend/application/api.py"
 copy_or_remove "backend/users"
 copy_or_remove "spa/app"
 copy_or_remove "spa/api"
+copy_or_remove "spa/next.config.mjs"
+copy_or_remove "spa/package.json"
 copy_or_remove "environment/version"
+copy_or_remove "environment/env.prod"
+copy_or_remove "environment/env.dev"
+copy_or_remove "environment/env.base"
 
 rsync -r $TMP_DIR/ $TARGET_DIR/
-cp -n $TMP_ENV_DIR/env.prod.template $TARGET_ENV_DIR/env.prod
-rm $TARGET_ENV_DIR/env.prod.template
-cp -n $TMP_ENV_DIR/env.stage.template $TARGET_ENV_DIR/env.stage
-rm $TARGET_ENV_DIR/env.stage.template
 rm -rf $TMP_DIR
 
 touch $TARGET_DIR/.env
@@ -73,4 +76,4 @@ if [ ! -d "$TARGET_DIR/spa/next_utils" ]; then
     git submodule add git@github.com:grey0ne/next_utils.git spa/next_utils
 fi
 
-git submodule update --init --recursive
+git submodule update

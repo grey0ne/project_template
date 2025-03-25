@@ -29,6 +29,7 @@ if [ $1 = "django" ]; then
 elif [ $1 = "rebuild" ]; then
     $DEV_COMPOSE down
     $DEV_COMPOSE build nextjs django
+    $DEV_COMPOSE run --rm -i nextjs sh -c "rm -rf node_modules package-lock.json && npm install"
     $DEV_COMPOSE up -d
 elif [ $1 = "up" ]; then
     $BALANCER_COMPOSE up -d

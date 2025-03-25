@@ -115,6 +115,7 @@ spa/.next
 backend/local_settings.py
 environment/env.stage
 environment/env.prod
+environment/env.dev
 deploy/ssl/*.key
 deploy/ssl/*.crt
 backup
