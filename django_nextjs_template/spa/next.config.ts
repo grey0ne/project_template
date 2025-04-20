@@ -1,8 +1,9 @@
-/** @type {import('next').NextConfig} */
-
+import { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
-const nextConfig = { };
+const nextConfig: NextConfig = { 
+    allowedDevOrigins: [process.env.PROJECT_DOMAIN || '',]
+};
 
 const sentryWebpackPluginOptions = {
     // Additional config options for the Sentry webpack plugin. Keep in mind that
