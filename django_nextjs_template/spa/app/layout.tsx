@@ -2,7 +2,7 @@
 import type { Metadata } from "next";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/app/theme';
 import { Counters } from '@/next_utils/counters';
