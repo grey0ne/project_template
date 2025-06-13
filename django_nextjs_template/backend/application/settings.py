@@ -4,7 +4,7 @@ import sys
 import django_stubs_ext
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-from application.settings_helper import config_get, config_get_str
+from dataorm.settings_helper import config_get, config_get_str
 from typing import Any
 from copy import deepcopy
 
@@ -32,7 +32,7 @@ ALLOWED_HOSTS: list[str] = [
     DOMAIN,
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE = [ # type: ignore Allow redefinition in project settings
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

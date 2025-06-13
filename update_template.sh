@@ -46,6 +46,7 @@ copy_or_remove "backend/Dockerfile.prod"
 copy_or_remove "backend/application/project_settings.py"
 copy_or_remove "backend/application/urls.py"
 copy_or_remove "backend/application/api.py"
+copy_or_remove "backend/application/admin.py"
 copy_or_remove "backend/users"
 copy_or_remove "spa/app"
 copy_or_remove "spa/api"
@@ -77,3 +78,4 @@ if [ ! -d "$TARGET_DIR/spa/next_utils" ]; then
 fi
 
 git submodule update
+

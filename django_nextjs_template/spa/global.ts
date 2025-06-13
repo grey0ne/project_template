@@ -1,5 +1,5 @@
-import { routing } from '@/i18n/routing';
-import { formats } from '@/i18n/request';
+import { routing } from '@/next_utils/i18n/routing';
+import { formats } from '@/next_utils/i18n/request';
 import projectMessages from '@/messages/en.json';
 import nextUtilsMessages from '@/next_utils/messages/en.json';
 
