@@ -1,9 +1,15 @@
 import { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
 import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = { 
-    allowedDevOrigins: [process.env.PROJECT_DOMAIN || '',]
+    allowedDevOrigins: [process.env.PROJECT_DOMAIN || '',],
+    skipTrailingSlashRedirect: true
 };
+
+const withNextIntl = createNextIntlPlugin(
+    './next_utils/i18n/request.ts'
+);
 
 const sentryWebpackPluginOptions = {
     // Additional config options for the Sentry webpack plugin. Keep in mind that
@@ -23,4 +29,4 @@ const sentryWebpackPluginOptions = {
     disableLogger: true
 };
 
-export default withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+export default withNextIntl(withSentryConfig(nextConfig, sentryWebpackPluginOptions));

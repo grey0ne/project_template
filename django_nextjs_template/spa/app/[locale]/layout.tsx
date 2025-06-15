@@ -6,17 +6,20 @@ import { Grid } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/app/theme';
 import { Counters } from '@/next_utils/counters';
+import { Locale } from 'next-intl';
 
+type LayoutParams = Promise<{ locale: Locale }>;
 
 export async function generateMetadata(): Promise<Metadata> {
     return {}
 }
 
-
 export default async function RootLayout({
     children,
+    params
 }: Readonly<{
     children: React.ReactNode;
+    params: LayoutParams;
 }>) {
 
     const GTAG_ID = process.env.NEXT_PUBLIC_GTAG;
