@@ -73,7 +73,11 @@ WSGI_APPLICATION = 'application.wsgi.application'
 if 'migrate' in sys.argv:
     db_options = {}
 else:
-    db_options = {"options": "-c statement_timeout=500"} 
+    db_options: dict[str, Any] = {
+        "options": "-c statement_timeout=500",
+        "pool": True
+    } 
+
 
 
 DATABASES: dict[str, Any] = {
