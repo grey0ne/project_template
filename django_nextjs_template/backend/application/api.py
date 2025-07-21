@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from ninja import NinjaAPI
-from users.api import current_user_router
+from users.api import user_router
 
 ninja_api = NinjaAPI(
     title=_("project API"),
@@ -11,4 +11,4 @@ ninja_api = NinjaAPI(
 )
 
 
-ninja_api.add_router('/current_user/', current_user_router, tags=["Users"])
+ninja_api.add_router('/users/', user_router, tags=["Users"])

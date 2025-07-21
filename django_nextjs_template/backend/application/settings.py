@@ -130,9 +130,11 @@ STATIC_S3_STORAGE['OPTIONS']['bucket_name'] = S3_STATIC_BUCKET
 
 LOCAL_STATIC_STORAGE: dict[str, Any] = { "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage" }
 
+STATIC_ROOT = os.path.join(SOURCE_DIR, 'collected_static')
+
 STORAGES: dict[str, Any] = {
     "default": MEDIA_S3_STORAGE,
-    "staticfiles": LOCAL_STATIC_STORAGE if DEBUG else STATIC_S3_STORAGE
+    "staticfiles": LOCAL_STATIC_STORAGE
 }
 
 AUTH_PASSWORD_VALIDATORS = [

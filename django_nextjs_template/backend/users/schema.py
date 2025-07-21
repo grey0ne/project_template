@@ -5,4 +5,10 @@ from dataclasses import dataclass
 class UserData:
     id: int
     username: str
-    is_superuser: bool
+
+
+@dataclass(kw_only=True, slots=True, frozen=True)
+class CurrentUserData:
+    id: int
+    username: str
+    is_superuser: bool | None = None
