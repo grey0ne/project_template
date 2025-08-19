@@ -1,16 +1,18 @@
 from ninja import Router, Path
 from django.http import HttpRequest
-from dataorm.api import single_item
-from dataorm.auth import async_get_user
+from django_utils.api import single_item
+from django_utils.auth import async_get_user
 from users.models import User
-from users.schema import UserData, CurrentUserData
+from users.schema import UserData, CurrentUserData, CurrentUserResponse
 
 user_router = Router()
 
-@single_item(user_router, url='current_user/', response_type=UserData)
+@single_item(user_router, url='current_user/', response_type=CurrentUserResponse)
 async def get_current_user(request: HttpRequest):
     user = await async_get_user(request)
-    return CurrentUserData(id=user.id, username=user.username, is_superuser=user.is_superuser)
+    return CurrentUserResponse(
+        user=CurrentUserData(id=user.id, username=user.username, is_superuser=user.is_superuser)
+    )
 
 
 @single_item(user_router, url='by_id/{user_id}', response_type=UserData)

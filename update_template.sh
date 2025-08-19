@@ -28,9 +28,11 @@ do
         sed -i '' "s/<project_domain>/$PROJECT_DOMAIN/g" $i
     fi
 done
+
 mv $TMP_DIR/.gitignore.template $TMP_DIR/.gitignore # Copy gitingore from template so is doesn't affect template repo
 
 copy_or_remove() {
+    # This function is used for initial project creation. It doesn't overwrite existing files.
     local file_path=$1
     if [ ! -f "$TARGET_DIR/$file_path"  ] && [ ! -d "$TARGET_DIR/$file_path" ]; then
         echo "Copying $TARGET_DIR/$file_path"
@@ -71,12 +73,11 @@ fi
 if [ ! -d "$TARGET_DIR/deploy" ]; then
     git submodule add git@github.com:grey0ne/django-deploy.git deploy
 fi
-if [ ! -d "$TARGET_DIR/backend/dataorm" ]; then
-    git submodule add git@github.com:grey0ne/dataorm.git backend/dataorm
+if [ ! -d "$TARGET_DIR/backend/django_utils" ]; then
+    git submodule add git@github.com:grey0ne/django_utils.git backend/django_utils
 fi
 if [ ! -d "$TARGET_DIR/spa/next_utils" ]; then
     git submodule add git@github.com:grey0ne/next_utils.git spa/next_utils
 fi
 
 git submodule update
-
